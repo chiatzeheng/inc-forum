@@ -9,25 +9,30 @@ import { api } from "@/trpc/react"
 import { useIntersection } from '@mantine/hooks'
 
 interface PostFeedProps {
+  isLoading : boolean
   initialPosts: ExtendedPost[]
   topicName?: string
 }
 
-const PostFeed: FC<PostFeedProps> = ({ initialPosts, topicName }) => {
+const PostFeed = ({ initialPosts, topicName, isLoading }: PostFeedProps) => {
   const lastPostRef = useRef<HTMLElement>(null)
   const { ref, entry } = useIntersection({
     root: lastPostRef.current,
     threshold: 1,
   })
+  
   const { data: session } = useSession()
 
   const { data, fetchNextPage, isFetchingNextPage } = api.post.fetchNextPage.useInfiniteQuery({
     limit: 10,
+    topicName: topicName,
+    pageParam: 1,
   },
   {
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-
-  },)
+  getNextPageParam: (_, pages) => {
+    return pages.length + 1
+  },
+  initialData: { pages: [initialPosts], pageParams: [1] }})
 
   useEffect(() => {
     if (entry?.isIntersecting) {
@@ -37,6 +42,8 @@ const PostFeed: FC<PostFeedProps> = ({ initialPosts, topicName }) => {
 
   const posts = data?.pages.flatMap((page) => page) ?? initialPosts
 
+  if (isLoading) return ( <div>Loading...</div> ) 
+  else
   return (
     <ul className='flex flex-col col-span-2 space-y-6'>
       {posts.map((post, index) => {

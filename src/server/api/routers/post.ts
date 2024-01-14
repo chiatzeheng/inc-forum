@@ -31,18 +31,69 @@ export const postRouter = createTRPCRouter({
     fetchNextPage: protectedProcedure
     .input(
       z.object({
+        limit: z.string(),
+        cursor: z.number().nullish(), 
+        pageParam: z.number().min(1),
+        topicName: z.string().nullish(),
+      }),
+    )
+    .query(async ({ctx, opts}) => {
+  
+      try {
+      
+        let whereClause = {}
+    
+        if (opts.topicName) {
+          whereClause = {
+            topicName: {
+              name: opts.topicName,
+            },
+          }
+        } 
+    
+        const posts = await ctx.db.post.findMany({
+          take: parseInt(opts.limit),
+          skip: (parseInt(opts.pageParam) - 1) * parseInt(opts.limit), // skip should start from 0 for page 1
+          orderBy: {
+            createdAt: 'desc',
+          },
+          include: {
+            topic: true,
+            author: true,
+            comments: true,
+          },
+          where: whereClause,
+        })
+    
+        return new Response(JSON.stringify(posts))
+      } catch (error) {
+        return new Response('Could not fetch posts', { status: 500 })
+      }
+    
+    }),
+
+    getAllPosts: protectedProcedure
+    .input(
+      z.object({
         limit: z.number().min(1).max(100).nullish(),
         cursor: z.number().nullish(), 
         pageParam: z.number().min(1),
         topicName: z.string().nullish(),
       }),
     )
-    .query(async (opts) => {
-
-      const query =
-      `/api/posts?limit=5&page=${pageParam}` +
-      (!!topicName ? `&topic=${topicName}` : '')
-    })
+    .query(async ({ctx}) => {
+      return await ctx.db.post.findMany({
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          author: true,
+          comments: true,
+          subreddit: true,
+        },
+        take: 4 // 4 to demonstrate infinite scroll, should be higher in production
+      })
+    }),
 
  
 
