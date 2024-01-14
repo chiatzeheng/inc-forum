@@ -1,3 +1,4 @@
+import { Editor } from '@/app/components/Editor'
 import { Button } from '@/app/components/ui/button'
 import { notFound } from 'next/navigation'
 import { api } from "@/trpc/react"
@@ -10,7 +11,7 @@ interface pageProps {
 
 const page = async ({ params }: pageProps) => {
 
-    const topic = await api.post.getAllPosts.query({ subredditSlug: params.slug })
+    const topic = await api.post.findFirst.useQuery({ slug: params.slug })
 
   if (!topic) return notFound()
   return (
@@ -22,13 +23,12 @@ const page = async ({ params }: pageProps) => {
             Create Post
           </h3>
           <p className='ml-2 mt-1 truncate text-sm text-gray-500'>
-            in r/{params.slug}
+            in {params.slug}
           </p>
         </div>
       </div>
 
-      {/* form */}
-      
+      <Editor topicId={topic.id} />
 
       <div className='w-full flex justify-end'>
         <Button type='submit' className='w-full' form='subreddit-post-form'>

@@ -84,4 +84,40 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
-});
+  
+    findUnique: protectedProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+    }),
+
+     
+
+  createNewPost: protectedProcedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        content: z.string().min(1),
+        topicId: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { title, content, topicId } = input;
+
+      await ctx.db.post.create({
+        data: {
+          title,
+          content,
+          authorId: ctx.session.user.id,
+          topicId,
+        },
+      });
+
+      return new Response("OK");
+    }),
+
+  })
