@@ -1,12 +1,13 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import {
+  Awaitable,
+  RequestInternal,
+  User,
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
-import CredentialsProvider from "next-auth/providers/discord";
-
-import { env } from "@/env";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/server/db";
 
 /**
@@ -47,6 +48,9 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "text", placeholder: "John Smith" },
       },
+      authorize: function (credentials: Record<"email", string> | undefined, req: Pick<RequestInternal, "query" | "body" | "headers" | "method">): Awaitable<User | null> {
+        throw new Error("Function not implemented.");
+      }
     }),
   ],
   callbacks: {

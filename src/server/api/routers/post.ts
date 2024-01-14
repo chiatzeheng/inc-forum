@@ -8,20 +8,6 @@ import {
 
 export const postRouter = createTRPCRouter({
 
-  create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      return ctx.db.post.create({
-        data: {
-          name: input.name,
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
-      });
-    }),
-
     createNewTopic: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
@@ -31,36 +17,36 @@ export const postRouter = createTRPCRouter({
     fetchNextPage: protectedProcedure
     .input(
       z.object({
-        limit: z.string(),
+        limit: z.number().min(1),
         cursor: z.number().nullish(), 
-        pageParam: z.number().min(1),
+        pageParam: z.string().min(1),
         topicName: z.string().nullish(),
       }),
     )
-    .query(async ({ctx, opts}) => {
+    .query(async ({ctx, input}) => {
   
       try {
       
         let whereClause = {}
     
-        if (opts.topicName) {
+        if (input.topicName) {
           whereClause = {
             topicName: {
-              name: opts.topicName,
+              name: input.topicName,
             },
           }
         } 
     
         const posts = await ctx.db.post.findMany({
-          take: parseInt(opts.limit),
-          skip: (parseInt(opts.pageParam) - 1) * parseInt(opts.limit), // skip should start from 0 for page 1
+          take: input.limit,
+          skip: (parseInt(input.pageParam) - 1) * (input.limit ?? 1),
           orderBy: {
             createdAt: 'desc',
           },
           include: {
             topic: true,
             author: true,
-            comments: true,
+            comment: true,
           },
           where: whereClause,
         })
@@ -88,8 +74,8 @@ export const postRouter = createTRPCRouter({
         },
         include: {
           author: true,
-          comments: true,
-          subreddit: true,
+          comment: true,
+          topic: true,
         },
         take: 4 // 4 to demonstrate infinite scroll, should be higher in production
       })
