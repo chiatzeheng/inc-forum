@@ -7,13 +7,6 @@ import {
 } from "@/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
 
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
@@ -29,14 +22,29 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  getLatest: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
-    });
-  }),
+    createNewTopic: protectedProcedure
+    .input(z.object({ name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      
+    }),
 
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
+    fetchNextPage: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100).nullish(),
+        cursor: z.number().nullish(), 
+        pageParam: z.number().min(1),
+        topicName: z.string().nullish(),
+      }),
+    )
+    .query(async (opts) => {
+
+      const query =
+      `/api/posts?limit=5&page=${pageParam}` +
+      (!!topicName ? `&topic=${topicName}` : '')
+    })
+
+ 
+
+
 });
