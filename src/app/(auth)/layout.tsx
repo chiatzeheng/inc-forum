@@ -21,8 +21,8 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getAuthSession();
-  if (session?.user) return redirect("/projects");
+  // const session = await getAuthSession();
+  // if (session?.user) return redirect("/projects");
 
   return (
     <html lang="en">
