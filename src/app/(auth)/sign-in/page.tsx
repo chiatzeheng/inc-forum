@@ -1,5 +1,4 @@
 import UserAuthForm from "@/app/components/UserAuthForm";
-import Link from "next/link";
 import { FC } from "react";
 
 const page: FC = () => {

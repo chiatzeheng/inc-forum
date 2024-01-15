@@ -11,7 +11,7 @@ interface pageProps {
 
 const page = async ({ params }: pageProps) => {
 
-    const topic = await api.post.findFirst.useQuery({ slug: params.slug })
+  const topic = await api.post.findFirst.useQuery({ slug: params.slug })
 
   if (!topic) return notFound()
   return (

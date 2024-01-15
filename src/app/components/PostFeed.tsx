@@ -2,9 +2,8 @@
 
 import { ExtendedPost } from '@/types/db'
 import { Loader2 } from 'lucide-react'
-import { FC, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Post from './Post'
-import { useSession } from 'next-auth/react'
 import { api } from "@/trpc/react"
 import { useIntersection } from '@mantine/hooks'
 
@@ -20,13 +19,11 @@ const PostFeed = ({ initialPosts, topicName, isLoading }: PostFeedProps) => {
     root: lastPostRef.current,
     threshold: 1,
   })
-  
-  const { data: session } = useSession()
 
   const { data, fetchNextPage, isFetchingNextPage } = api.post.fetchNextPage.useInfiniteQuery({
     limit: 10,
     topicName: topicName,
-    pageParam: 1,
+    pageParam: '1',
   },
   {
   getNextPageParam: (_, pages) => {
@@ -49,11 +46,11 @@ const PostFeed = ({ initialPosts, topicName, isLoading }: PostFeedProps) => {
       {posts.map((post, index) => {
         if (index === posts.length - 1) {
           return (
-            <li key={post.id} ref={ref}>
+            <li key={post?.id} ref={ref}>
               <Post
                 post={post}
-                commentAmt={post.comments.length}
-                topicName={post.topicName.name}
+                commentAmt={post?.comment?.length ?? 0}
+                topicName={post?.topicName}
               />
             </li>
           )
@@ -62,10 +59,8 @@ const PostFeed = ({ initialPosts, topicName, isLoading }: PostFeedProps) => {
             <Post
               key={post.id}
               post={post}
-              commentAmt={post.comments.length}
-              subredditName={post.subreddit.name}
-              votesAmt={votesAmt}
-              currentVote={currentVote}
+              commentAmt={post.comment?.length}
+              topicName={post?.topicName }
             />
           )
         }

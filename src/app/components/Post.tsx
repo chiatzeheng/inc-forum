@@ -30,17 +30,17 @@ const Post: FC<PostProps> = ({
               <>
                 <a
                   className='underline text-zinc-900 text-sm underline-offset-2'
-                  href={`/r/${topicName}`}>
+                  href={`/topic/${topicName}`}>
                   r/{topicName}
                 </a>
                 <span className='px-1'>•</span>
               </>
             ) : null}
-            <span>Posted by u/{post.author.name}</span>{' '}
+            <span>Posted by {post?.author ?? ''}</span>{' '}
             latest date
             {/* need to format the time based on R&D Team */}
           </div>
-          <a href={`/r/${topicName}/post/${post.id}`}>
+          <a href={`/topic/${topicName}/post/${post.id}`}>
             <h1 className='text-lg font-semibold py-2 leading-6 text-gray-900'>
               {post.title}
             </h1>

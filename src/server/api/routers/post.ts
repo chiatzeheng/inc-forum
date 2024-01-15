@@ -2,16 +2,14 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
-  protectedProcedure,
   publicProcedure,
+  protectedProcedure
 } from "@/server/api/trpc";
+import { TRPCClientError } from "@trpc/client";
 
 export const postRouter = createTRPCRouter({
-  createNewTopic: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {}),
 
-  fetchNextPage: protectedProcedure
+  fetchNextPage: publicProcedure
     .input(
       z.object({
         limit: z.number().min(1),
@@ -52,7 +50,7 @@ export const postRouter = createTRPCRouter({
       }
     }),
 
-  getAllPosts: protectedProcedure
+  getAllPosts: publicProcedure
     .input(
       z.object({
         limit: z.number().min(1).max(100).nullish(),
@@ -75,29 +73,27 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  findFirst: protectedProcedure
+  findFirst: publicProcedure
     .input(z.object({ slug: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      const topic = await ctx.db.topic.findFirst({
+       return await ctx.db.topic.findFirst({
         where: {
           name: input.slug,
         },
       });
+
     }),
   
-    findUnique: protectedProcedure
+    findUnique: publicProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      const post = await ctx.db.post.findUnique({
+      return await ctx.db.post.findUnique({
         where: {
           id: input.id,
         },
       })
     }),
-
-     
-
-  createNewPost: protectedProcedure
+  createNewPost: publicProcedure
     .input(
       z.object({
         title: z.string().min(1),
@@ -118,6 +114,49 @@ export const postRouter = createTRPCRouter({
       });
 
       return new Response("OK");
+    }),
+
+    findManyComments : publicProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+     return await ctx.db.comment.findMany({
+        where: {
+          postId: input.id,
+          replyToId: null, 
+        },
+        include: {
+          author: true,
+          replies: {
+            include: {
+              author: true,
+            },
+          },
+        },
+      })    
+    }),
+
+
+    createComment: publicProcedure
+    .input(z.object({ text: z.string().min(1), postId: z.string().min(1), replyToId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      try {
+        await ctx.db.comment.create({
+          data: {
+            text: input.text,
+            postId: input.postId,
+            authorId: ctx.session.user.id , 
+            replyToId: input.replyToId,
+            updatedAt: new Date(), 
+            userId: ctx.session.user.id , 
+          },
+        });
+
+        return new Response('OK');
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return new TRPCClientError(error.message)
+        }
+      }
     }),
 
   })

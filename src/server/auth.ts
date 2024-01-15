@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
       name: 'Credentials',
       credentials: {
         email: { label: "Email", type: "text", placeholder: "John Smith" },
+        password: { label: "Password", type: "password" }
       },
       authorize: function (credentials: Record<"email", string> | undefined, req: Pick<RequestInternal, "query" | "body" | "headers" | "method">): Awaitable<User | null> {
         throw new Error("Function not implemented.");
@@ -61,17 +62,22 @@ export const authOptions: NextAuthOptions = {
         ...user,
       },
     }),
-    async signIn({ user }) {
-      if (!user.email) return false;
-      const exists = await db.user.findUnique({
-        where: {
-          email: user.email.toLowerCase(),
-        },
-      });
-      return !!exists;
-    },    
+    async signIn({ user }): Promise<string | boolean> {
+      const newUser = { email: 'john.doe@example.com', password: '12345678' };
+      // if (!user.email) return false;
+      //  const founduser = await db.user.findUnique({
+      //   where: {
+      //     email: user.email.toLowerCase(),
+      //   },
+      // }); 
+      console.log(user);
+      if (user.email === newUser.email) {
+        return 'success';
+      }
+      return 'failure';
+    },
     redirect() {
-      return '/projects'
+      return '/topics'
     },
   },
 }
