@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/app/components/ui/button";
+import { redirect } from "next/navigation";
 
 const Home = async () => {
 
@@ -8,7 +9,7 @@ const Home = async () => {
     <div>
       <div className="flex flex-row  py-10">
       <h1 className="text-xl font-medium">My Projects</h1>
-      <Button className="ml-10 px-10"  > Link to Discussion Forum </Button>
+      <Button className="ml-10 px-10" onClick={redirect("/topics")} > Link to Discussion Forum </Button>
       </div>
 
    
@@ -72,9 +73,6 @@ const Home = async () => {
                     fill="url(#a)"
                   />
                 </svg>
-              </div>
-              <div className="p-4">
-                <p className="font-medium">Hello</p>
               </div>
             </div>
       </div>

@@ -14,12 +14,14 @@ const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
   const [password, setPassword] = React.useState<string>("");
 
   const handleLogin = async (e: FormEvent) => {
-    e.preventDefault();
     setIsLoading(true);
+    event?.preventDefault();
+    console.log(e)
 
     try {
-      await signIn("credentials", {
-        email,
+      await signIn("email", {
+        email, 
+        password,
         redirect: true,
       });
       
