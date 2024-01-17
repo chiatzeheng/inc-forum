@@ -2,7 +2,6 @@ import "@/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
-import Navbar from "@/app/components/Navbar";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "react-hot-toast";
 import { MantineProvider } from "@mantine/core";
@@ -35,7 +34,6 @@ export default async function RootLayout({
       >
         <TRPCReactProvider cookies={cookies().toString()}>
           <MantineProvider>
-            <Navbar />
             <div className="container mx-auto h-full max-w-7xl pt-12">
               {children}
             </div>
