@@ -7,7 +7,7 @@ interface pageProps {
 const page: FC<pageProps> = ({}) => {
     return (
         <div>
-            page
+            View Posts
         </div>
     );
 }
