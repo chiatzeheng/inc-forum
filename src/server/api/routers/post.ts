@@ -9,5 +9,4 @@ import { TRPCClientError } from "@trpc/client";
 
 export const postRouter = createTRPCRouter({
 
-
-  })
+})

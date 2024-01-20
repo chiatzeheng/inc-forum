@@ -27,7 +27,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`font-sans ${inter.variable} mx-10 min-h-screen bg-white pt-12 text-slate-900`}
+        className={`font-sans ${inter.variable} mx-10 min-h-screen bg-slate-50 pt-12 text-slate-900`}
       >
         <TRPCReactProvider cookies={cookies().toString()}>
           <MantineProvider>

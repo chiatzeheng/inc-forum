@@ -32,55 +32,55 @@ declare module "next-auth" {
   // }
 }
 
-
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   pages: {
-    signIn: '/sign-in',
+    signIn: "/sign-in",
   },
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text", placeholder: "John Smith" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
-      authorize: async function (credentials: Record<"email" | "password", string> | undefined, req: Pick<RequestInternal, "query" | "body" | "headers" | "method">): Promise<User | null>
-      {
-
+      authorize: async function (
+        credentials: Record<"email" | "password", string> | undefined,
+        req: Pick<RequestInternal, "query" | "body" | "headers" | "method">,
+      ): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) {
-          return null
+          return null;
         }
 
         const user = await db.user.findUnique({
           where: {
             email: credentials.email,
-            password: credentials.password
-          }
-        })
+            password: credentials.password,
+          },
+        });
 
         if (!user) {
           return null;
         }
-
         return user;
-
-      }
+      },
     }),
   ],
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        ...user,
-      },
-    }),
+    session: ({ session, user, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          ...user,
+          id: token.sub,
+        },
+      };
+    },
   },
-}
+};
 
-export const getAuthSession = () => getServerSession(authOptions)
+export const getAuthSession = () => getServerSession(authOptions);
