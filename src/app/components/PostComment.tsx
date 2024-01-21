@@ -1,7 +1,13 @@
 "use client";
 
+import { Button } from "./ui/button";
 import { Comment, User } from "@prisma/client";
-import { FC, useRef } from "react";
+import { Eye, Loader2, MessageSquare } from "lucide-react";
+import { FC, useState } from "react";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { api } from "@/trpc/react";
+import toast from "react-hot-toast";
 
 type ExtendedComment = Comment & {
   author: User;
@@ -9,25 +15,133 @@ type ExtendedComment = Comment & {
 
 interface PostCommentProps {
   comment: ExtendedComment;
+  layer: number;
 }
 
-const PostComment: FC<PostCommentProps> = ({ comment }) => {
-  const commentRef = useRef<HTMLDivElement>(null);
+const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
+  const [isReplying, setIsReplying] = useState(false);
+  const [input, setInput] = useState<string>("");
+  const [viewMoreComments, setViewMoreComments] = useState(false);
+
+  const { mutate: reply, isLoading } = api.comment.createComment.useMutation({
+    onSuccess: () => {
+      setInput("");
+      setIsReplying(false);
+      toast.success("Comment posted");
+      refetch();
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Failed to post comment");
+    },
+  });
+
+  const { data: comments, refetch } = api.comment.getComments.useQuery({
+    postId: comment.postId,
+    replyToId: comment.id,
+  });
 
   return (
-    <div ref={commentRef} className="flex flex-col rounded-lg p-2">
+    <div className="flex flex-col">
       <div className="flex items-center">
         <div className="flex items-center gap-x-2">
           <p className="text-sm font-medium text-gray-900">
             {comment.author.name}
           </p>
-
           <p className="max-h-40 truncate text-xs text-zinc-500">
             {comment.createdAt.toLocaleDateString()}
           </p>
         </div>
       </div>
-      <p className="mt-2 text-sm text-zinc-900">{comment.text}</p>
+      <div className="ms-2 mt-2 border-l-2 border-slate-300 px-5">
+        <p className="text-md mt-2 text-zinc-900">{comment.text}</p>
+        <div className="mt-3">
+          {comments && comments.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="me-3 w-fit p-2"
+              onClick={() => {
+                setViewMoreComments(!viewMoreComments);
+              }}
+            >
+              <Eye className="mr-1.5 h-4 w-4" />
+              View Comments ({comments.length})
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setIsReplying(!isReplying);
+            }}
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-fit p-2"
+          >
+            <MessageSquare className="mr-1.5 h-4 w-4" />
+            Reply
+          </Button>
+        </div>
+        {isReplying ? (
+          <div className="mt-1">
+            <Label htmlFor="comment">Your comment</Label>
+            <div className="mt-2">
+              <Textarea
+                id="comment"
+                placeholder="What are your thoughts"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+              />
+              <div className="mt-2 flex justify-end">
+                <Button
+                  className="mr-2"
+                  onClick={() => {
+                    setIsReplying(false);
+                    setInput("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  disabled={input.length === 0 || isLoading}
+                  onClick={() => {
+                    reply({
+                      postId: comment.postId,
+                      replyToId: comment.id,
+                      text: input,
+                    });
+                  }}
+                >
+                  {isLoading && <Loader2 className="mr-1.5 h-4 w-4" />}
+                  Post
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+      {comments ? (
+        <div>
+          {viewMoreComments ? (
+            <div className="mt-2">
+              {comments.map((comment) => {
+                return (
+                  <div
+                    className="m-6 rounded-lg bg-white ps-3"
+                    key={comment.id}
+                  >
+                    <PostComment
+                      comment={comment}
+                      key={comment.id}
+                      layer={layer + 1}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 };

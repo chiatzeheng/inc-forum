@@ -20,7 +20,6 @@ export const commentRouter = createTRPCRouter({
       if (!ctx.session?.user) {
         throw new TRPCClientError("You must be logged in to comment");
       }
-      console.log(ctx.session.user);
       try {
         const comment = await ctx.db.comment.create({
           data: {
@@ -35,9 +34,31 @@ export const commentRouter = createTRPCRouter({
         if (err instanceof z.ZodError) {
           return new TRPCClientError(err.message);
         } else {
-          console.log(err)
+          console.log(err);
           throw new TRPCClientError("Something went wrong");
         }
       }
+    }),
+  getComments: publicProcedure
+    .input(
+      z.object({
+        replyToId: z.string().min(1),
+        postId: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const comments = await ctx.db.comment.findMany({
+        where: {
+          postId: input.postId,
+          replyToId: input.replyToId,
+        },
+        include: {
+          author: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+      return comments;
     }),
 });
