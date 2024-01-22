@@ -2,12 +2,13 @@
 
 import { Button } from "./ui/button";
 import { Comment, User } from "@prisma/client";
-import { Eye, Loader2, MessageSquare } from "lucide-react";
+import { ArrowRightSquareIcon, Eye, Loader2, MessageSquare } from "lucide-react";
 import { FC, useState } from "react";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { api } from "@/trpc/react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type ExtendedComment = Comment & {
   author: User;
@@ -22,6 +23,7 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [input, setInput] = useState<string>("");
   const [viewMoreComments, setViewMoreComments] = useState(false);
+  const router = useRouter();
 
   const { mutate: reply, isLoading } = api.comment.createComment.useMutation({
     onSuccess: () => {
@@ -56,7 +58,19 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
       <div className="ms-2 mt-2 border-l-2 border-slate-300 px-5">
         <p className="text-md mt-2 text-zinc-900">{comment.text}</p>
         <div className="mt-3">
-          {comments && comments.length > 0 && (
+          {layer === 4 ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="me-3 w-fit p-2"
+              onClick={() => {
+                router.push(`/post/${comment.postId}/${comment.id}`);
+              }}
+            >
+              Continue this thread
+              <ArrowRightSquareIcon className="ms-1.5 mt-0.5 h-5 w-5" />
+            </Button>
+          ) : comments && comments.length > 0 ? (
             <Button
               variant="outline"
               size="sm"
@@ -68,7 +82,7 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
               <Eye className="mr-1.5 h-4 w-4" />
               View Comments ({comments.length})
             </Button>
-          )}
+          ) : null}
           <Button
             onClick={() => {
               setIsReplying(!isReplying);
