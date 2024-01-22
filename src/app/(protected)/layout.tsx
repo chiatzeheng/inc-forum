@@ -38,7 +38,7 @@ export default async function RootLayout({
       >
         <TRPCReactProvider cookies={cookies().toString()}>
           <MantineProvider>
-            <div className="container mx-auto h-full max-w-7xl pt-12">
+            <div className="container mx-auto h-full max-w-6xl pt-12 pb-20">
               {children}
             </div>
             <Toaster />
