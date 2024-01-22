@@ -11,9 +11,13 @@ interface pageProps {
 }
 
 const page: FC<pageProps> = async ({ params }) => {
+
+  //first slug is the post id, second slug is the comment id
+  //if there is no comment id, then the second slug is undefined
   const postId = params.slug[0];
   const commentId = params.slug[1];
 
+  //get the post with the author and topic
   const post = await db.post.findUnique({
     include: {
       author: {
@@ -32,6 +36,7 @@ const page: FC<pageProps> = async ({ params }) => {
     },
   });
 
+  //if the post is not found, return a message
   if (!post) return <div>Post not found</div>;
 
   return (
@@ -47,8 +52,10 @@ const page: FC<pageProps> = async ({ params }) => {
               {post.topic.name}
             </p>
           </div>
+          {/* render post content using EditorOutput as we content is stored in json (using editor js) */}
           <EditorOutput content={post.content} />
         </div>
+        {/* render comments section */}
         <CommentsSection postId={post.id} commentId={commentId} />
       </div>
       <ProfileInfo />

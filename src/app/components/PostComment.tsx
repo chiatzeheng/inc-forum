@@ -1,18 +1,19 @@
 "use client";
 
 import { Button } from "./ui/button";
-import { Comment, User } from "@prisma/client";
-import { ArrowRightSquareIcon, Eye, Loader2, MessageSquare } from "lucide-react";
+import {
+  ArrowRightSquareIcon,
+  Eye,
+  Loader2,
+  MessageSquare,
+} from "lucide-react";
 import { FC, useState } from "react";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { api } from "@/trpc/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
-type ExtendedComment = Comment & {
-  author: User;
-};
+import type { ExtendedComment } from "@/types/comment.d.ts";
 
 interface PostCommentProps {
   comment: ExtendedComment;
@@ -20,11 +21,15 @@ interface PostCommentProps {
 }
 
 const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
+  //isReplying is a boolean that determines if the user is replying to a comment
   const [isReplying, setIsReplying] = useState(false);
+  //input is the text that the user is typing
   const [input, setInput] = useState<string>("");
+  //viewMoreComments is a boolean that determines if the user wants to view more comments
   const [viewMoreComments, setViewMoreComments] = useState(false);
   const router = useRouter();
 
+  //create a comment
   const { mutate: reply, isLoading } = api.comment.createComment.useMutation({
     onSuccess: () => {
       setInput("");
@@ -38,6 +43,7 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
     },
   });
 
+  //get comments that are replying to the comment
   const { data: comments, refetch } = api.comment.getComments.useQuery({
     postId: comment.postId,
     replyToId: comment.id,
@@ -58,6 +64,8 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
       <div className="ms-2 mt-2 border-l-2 border-slate-300 px-5">
         <p className="text-md mt-2 text-zinc-900">{comment.text}</p>
         <div className="mt-3">
+          {/* if the layer is 4 means, the thread is too deep to continue rendering in the same page, so render in a diff page */}
+          {/* this is where the slugs comes into play and the continuation of the thread will be shown first*/}
           {layer === 4 ? (
             <Button
               variant="outline"

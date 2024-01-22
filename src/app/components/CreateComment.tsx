@@ -15,9 +15,10 @@ interface CreateCommentProps {
 }
 
 const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
+  //input state for the comment
   const [input, setInput] = useState<string>("");
   const router = useRouter();
-
+  //create comment mutation
   const { mutate: comment, isLoading } = api.comment.createComment.useMutation({
     onSuccess: () => {
       router.refresh();

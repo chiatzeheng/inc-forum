@@ -13,26 +13,15 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { FormSchema, formSchema } from "@/lib/validators/login";
 
-const formSchema = z.object({
-  email: z.string().min(1, {
-    message: "Fill up email",
-  }),
-  password: z.string().min(1, {
-    message: "Fill up password",
-  }),
-});
-
-interface LoginProps {}
-
-const Login: FC<LoginProps> = ({}) => {
+const Login: FC = () => {
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -40,10 +29,7 @@ const Login: FC<LoginProps> = ({}) => {
     },
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (
-    data,
-    e,
-  ) => {
+  const onSubmit: SubmitHandler<FormSchema> = async (data, e) => {
     e?.preventDefault();
 
     const result = await signIn("credentials", {
@@ -56,9 +42,8 @@ const Login: FC<LoginProps> = ({}) => {
       toast.error("Login failed");
       return;
     } else {
-        router.push("/");
+      router.push("/");
     }
-
   };
 
   return (
