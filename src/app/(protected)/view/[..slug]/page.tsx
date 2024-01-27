@@ -3,6 +3,7 @@ import { db } from "@/server/db";
 import { FC } from "react";
 import CommentsSection from "@/app/components/CommentsSection";
 import ProfileInfo from "@/app/components/ProfileInfo";
+import { api } from "@/trpc/react"
 
 interface pageProps {
   params: {
@@ -14,27 +15,10 @@ const page: FC<pageProps> = async ({ params }) => {
 
   //first slug is the post id, second slug is the comment id
   //if there is no comment id, then the second slug is undefined
-  const postId = params.slug[0];
-  const commentId = params.slug[1];
+  const [postId, commentId ] = params.slug
 
-  //get the post with the author and topic
-  const post = await db.post.findUnique({
-    include: {
-      author: {
-        select: {
-          name: true,
-        },
-      },
-      topic: {
-        select: {
-          name: true,
-        },
-      },
-    },
-    where: {
-      id: postId,
-    },
-  });
+  //TRPC Query for Posts
+  const { data: post } = api.comment.getPost.useQuery({ id: postId})
 
   //if the post is not found, return a message
   if (!post) return <div>Post not found</div>;

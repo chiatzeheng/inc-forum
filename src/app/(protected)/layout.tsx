@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { MantineProvider } from "@mantine/core";
 import { getAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
+import Navbar from "@/app/components/Navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,19 +26,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getAuthSession();
-  console.log(session);
 
-  if (!session?.user) {
-    return redirect("/sign-in");
-  }
-
-  return (
+  if (!session?.user) return redirect("/sign-in");
+  else return (
     <html lang="en">
       <body
         className={`font-sans ${inter.variable} mx-10 min-h-screen bg-slate-50 pt-12 text-slate-900`}
       >
         <TRPCReactProvider cookies={cookies().toString()}>
           <MantineProvider>
+          <Navbar />
             <div className="container mx-auto h-full max-w-6xl pt-12 pb-20">
               {children}
             </div>
