@@ -5,8 +5,7 @@ import { cookies } from "next/headers";
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "react-hot-toast";
 import { MantineProvider } from "@mantine/core";
-import { getAuthSession } from "@/server/auth";
-import { redirect } from "next/navigation";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,12 +23,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getAuthSession();
-  console.log(session);
-
-  if (!session?.user) {
-    return redirect("/sign-in");
-  }
 
   return (
     <html lang="en">
@@ -38,7 +31,7 @@ export default async function RootLayout({
       >
         <TRPCReactProvider cookies={cookies().toString()}>
           <MantineProvider>
-            <div className="container mx-auto h-full max-w-6xl pt-12 pb-20">
+            <div className="container mx-auto h-full max-w-7xl pt-12">
               {children}
             </div>
             <Toaster />

@@ -32,54 +32,55 @@ declare module "next-auth" {
   // }
 }
 
-
-
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   pages: {
-    signIn: '/sign-in',
+    signIn: "/sign-in",
   },
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text", placeholder: "John Smith" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
-      authorize: function (credentials: Record<"email", string> | undefined, req: Pick<RequestInternal, "query" | "body" | "headers" | "method">): Awaitable<User | null> {
-        throw new Error("Function not implemented.");
-      }
+      authorize: async function (
+        credentials: Record<"email" | "password", string> | undefined,
+        req: Pick<RequestInternal, "query" | "body" | "headers" | "method">,
+      ): Promise<User | null> {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await db.user.findUnique({
+          where: {
+            email: credentials.email,
+            password: credentials.password,
+          },
+        });
+
+        if (!user) {
+          return null;
+        }
+        return user;
+      },
     }),
   ],
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        ...user,
-      },
-    }),
-    async signIn({ user }): Promise<string | boolean> {
-      const newUser = { email: 'john.doe@example.com', password: '12345678' };
-      // if (!user.email) return false;
-      //  const founduser = await db.user.findUnique({
-      //   where: {
-      //     email: user.email.toLowerCase(),
-      //   },
-      // }); 
-      console.log(user);
-      if (user.email === newUser.email) {
-        return 'success';
-      }
-      return 'failure';
-    },
-    redirect() {
-      return '/topics'
+    session: ({ session, user, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          ...user,
+          id: token.sub,
+        },
+      };
     },
   },
-}
+};
 
-export const getAuthSession = () => getServerSession(authOptions)
+export const getAuthSession = () => getServerSession(authOptions);

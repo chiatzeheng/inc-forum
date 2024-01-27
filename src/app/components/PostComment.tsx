@@ -1,159 +1,171 @@
-'use client'
-import { Comment,  User } from '@prisma/client'
-import { MessageSquare } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { FC, useRef, useState } from 'react'
-import { UserAvatar } from './UserAvatar'
-import { Button } from './ui/button'
-import { Label } from './ui/label'
-import { Textarea } from './ui/textarea'
-import { useSession } from 'next-auth/react'
-import { api } from "@/trpc/react"
+"use client";
 
-import { RefObject, useEffect } from 'react'
-
-type Event = MouseEvent | TouchEvent
-
-export const useOnClickOutside = <T extends HTMLElement = HTMLElement>(
-  ref: RefObject<T>,
-  handler: (event: Event) => void
-) => {
-  useEffect(() => {
-    const listener = (event: Event) => {
-      const el = ref?.current
-      if (!el || el.contains((event?.target as Node) || null)) {
-        return
-      }
-
-      handler(event) 
-    }
-
-    document.addEventListener('mousedown', listener)
-    document.addEventListener('touchstart', listener)
-
-    return () => {
-      document.removeEventListener('mousedown', listener)
-      document.removeEventListener('touchstart', listener)
-    }
-  }, [ref, handler])
-}
-
-type ExtendedComment = Comment & {
-  author: User
-}
+import { Button } from "./ui/button";
+import {
+  ArrowRightSquareIcon,
+  Eye,
+  Loader2,
+  MessageSquare,
+} from "lucide-react";
+import { FC, useState } from "react";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { api } from "@/trpc/react";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import type { ExtendedComment } from "@/types/comment.d.ts";
 
 interface PostCommentProps {
-  comment: ExtendedComment
-  postId: string
+  comment: ExtendedComment;
+  layer: number;
 }
 
-const PostComment = ({
-  comment,
-  postId,
-}: PostCommentProps) => {
-  const { data: session } = useSession()
-  const [isReplying, setIsReplying] = useState<boolean>(false)
-  const commentRef = useRef<HTMLDivElement>(null)
-  const [input, setInput] = useState<string>(`@${comment.author.name} `)
-  const router = useRouter()
-  useOnClickOutside(commentRef, () => {
-    setIsReplying(false)
-  })
+const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
+  //isReplying is a boolean that determines if the user is replying to a comment
+  const [isReplying, setIsReplying] = useState(false);
+  //input is the text that the user is typing
+  const [input, setInput] = useState<string>("");
+  //viewMoreComments is a boolean that determines if the user wants to view more comments
+  const [viewMoreComments, setViewMoreComments] = useState(false);
+  const router = useRouter();
 
-//   const { mutate: postComment, isLoading } = useMutation({
-//     mutationFn: async ({ postId, text, replyToId }: CommentRequest) => {
-//       const payload: CommentRequest = { postId, text, replyToId }
+  //create a comment
+  const { mutate: reply, isLoading } = api.comment.createComment.useMutation({
+    onSuccess: () => {
+      setInput("");
+      setIsReplying(false);
+      toast.success("Comment posted");
+      refetch();
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Failed to post comment");
+    },
+  });
 
-     
-//       return data
-//     },
-//     onSuccess: () => {
-//       router.refresh()
-//       setIsReplying(false)
-//     },
-//   })
-
-const { mutate: postComment, isLoading } =  api.post.createComment.useMutationAsync() 
+  //get comments that are replying to the comment
+  const { data: comments, refetch } = api.comment.getComments.useQuery({
+    postId: comment.postId,
+    replyToId: comment.id,
+  });
 
   return (
-    <div ref={commentRef} className='flex flex-col'>
-      <div className='flex items-center'>
-        <UserAvatar
-          user={{
-            name: comment.author.name || null,
-            image: comment.author.image || null,
-          }}
-          className='h-6 w-6'
-        />
-        <div className='ml-2 flex items-center gap-x-2'>
-          <p className='text-sm font-medium text-gray-900'>u/{comment.author.name}</p>
-
-          <p className='max-h-40 truncate text-xs text-zinc-500'>
-            {new Date(comment.createdAt).toString()}
+    <div className="flex flex-col">
+      <div className="flex items-center">
+        <div className="flex items-center gap-x-2">
+          <p className="text-sm font-medium text-gray-900">
+            {comment.author.name}
+          </p>
+          <p className="max-h-40 truncate text-xs text-zinc-500">
+            {comment.createdAt.toLocaleDateString()}
           </p>
         </div>
       </div>
-
-      <p className='text-sm text-zinc-900 mt-2'>{comment.text}</p>
-
-      <div className='flex gap-2 items-center'>
-
-        <Button
-          onClick={() => {
-            if (!session) return router.push('/sign-in')
-            setIsReplying(true)
-          }}
-          variant='ghost'
-          size='sm'>
-          <MessageSquare className='h-4 w-4 mr-1.5' />
-          Reply
-        </Button>
-      </div>
-
-      {isReplying ? (
-        <div className='grid w-full gap-1.5'>
-          <Label htmlFor='comment'>Your comment</Label>
-          <div className='mt-2'>
-            <Textarea
-              onFocus={(e) =>
-                e.currentTarget.setSelectionRange(
-                  e.currentTarget.value.length,
-                  e.currentTarget.value.length
-                )
-              }
-              autoFocus
-              id='comment'
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              rows={1}
-              placeholder='What are your thoughts?'
-            />
-
-            <div className='mt-2 flex justify-end gap-2'>
-              <Button
-                tabIndex={-1}
-                variant='destructive'
-                onClick={() => setIsReplying(false)}>
-                Cancel
-              </Button>
-              <Button
-                isLoading={isLoading}
-                onClick={() => {
-                  if (!input) return
-                  postComment({
-                    postId,
-                    text: input,
-                    replyToId: comment.replyToId ?? comment.id, // default to top-level comment
-                  })
-                }}>
-                Post
-              </Button>
+      <div className="ms-2 mt-2 border-l-2 border-slate-300 px-5">
+        <p className="text-md mt-2 text-zinc-900">{comment.text}</p>
+        <div className="mt-3">
+          {/* if the layer is 4 means, the thread is too deep to continue rendering in the same page, so render in a diff page */}
+          {/* this is where the slugs comes into play and the continuation of the thread will be shown first*/}
+          {layer === 4 ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="me-3 w-fit p-2"
+              onClick={() => {
+                router.push(`/post/${comment.postId}/${comment.id}`);
+              }}
+            >
+              Continue this thread
+              <ArrowRightSquareIcon className="ms-1.5 mt-0.5 h-5 w-5" />
+            </Button>
+          ) : comments && comments.length > 0 ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="me-3 w-fit p-2"
+              onClick={() => {
+                setViewMoreComments(!viewMoreComments);
+              }}
+            >
+              <Eye className="mr-1.5 h-4 w-4" />
+              View Comments ({comments.length})
+            </Button>
+          ) : null}
+          <Button
+            onClick={() => {
+              setIsReplying(!isReplying);
+            }}
+            variant="ghost"
+            size="sm"
+            className="mt-2 w-fit p-2"
+          >
+            <MessageSquare className="mr-1.5 h-4 w-4" />
+            Reply
+          </Button>
+        </div>
+        {isReplying ? (
+          <div className="mt-1">
+            <Label htmlFor="comment">Your comment</Label>
+            <div className="mt-2">
+              <Textarea
+                id="comment"
+                placeholder="What are your thoughts"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                rows={1}
+              />
+              <div className="mt-2 flex justify-end">
+                <Button
+                  className="mr-2"
+                  onClick={() => {
+                    setIsReplying(false);
+                    setInput("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  disabled={input.length === 0 || isLoading}
+                  onClick={() => {
+                    reply({
+                      postId: comment.postId,
+                      replyToId: comment.id,
+                      text: input,
+                    });
+                  }}
+                >
+                  {isLoading && <Loader2 className="mr-1.5 h-4 w-4" />}
+                  Post
+                </Button>
+              </div>
             </div>
           </div>
+        ) : null}
+      </div>
+      {comments ? (
+        <div>
+          {viewMoreComments ? (
+            <div className="mt-2">
+              {comments.map((comment) => {
+                return (
+                  <div
+                    className="m-6 rounded-lg bg-white ps-3"
+                    key={comment.id}
+                  >
+                    <PostComment
+                      comment={comment}
+                      key={comment.id}
+                      layer={layer + 1}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
-  )
-}
+  );
+};
 
-export default PostComment
+export default PostComment;
