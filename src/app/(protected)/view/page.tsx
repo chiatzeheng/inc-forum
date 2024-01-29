@@ -25,19 +25,21 @@ export default async function Home() {
           </div>
           <dl className='-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6'>
           <div className='flex justify-between gap-x-4 py-3'>
+              {/* <SearchBar/> */}
               <p className='text-zinc-500'>
                 Homepage to see posts 
               </p>
             </div>
 
         
-            <Link
+          <Link
               className={buttonVariants({
                 className: 'w-full mt-4 mb-6',
               })}
-              href={`/`}>
-              Create topic
+              href={`/add`}>
+              Post A Question 
             </Link>
+            
           </dl>
         </div>
       </div>

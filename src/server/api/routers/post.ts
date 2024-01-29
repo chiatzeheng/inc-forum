@@ -2,12 +2,12 @@ import { z } from "zod";
 
 import {
   createTRPCRouter,
-  publicProcedure,
+  protectedProcedure,
 } from "@/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
 
-  fetchNextPage: publicProcedure
+  fetchNextPage: protectedProcedure
     .input(
       z.object({
         limit: z.number().min(1),
@@ -48,7 +48,7 @@ export const postRouter = createTRPCRouter({
       }
     }),
 
-  getAllPosts: publicProcedure
+  getAllPosts: protectedProcedure
     .input(
       z.object({
         limit: z.number().min(1).max(100).nullish(),
@@ -71,7 +71,27 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  findFirst: publicProcedure
+    createNewQuestion: protectedProcedure
+    .input(z.object({
+      title: z.string().min(1),
+      topic: z.string().min(1),
+      content: z.string().min(1),
+      title: z.string().min(1), 
+}))
+    .mutation(async ({ ctx, input }) => {
+
+      console.log(ctx)
+      // return await ctx.db.post.create(
+      //   {
+      //     title: input.title,
+      //     content: input.content,
+      //     topic: input.topic,
+      //     author: ctx.user
+      //     authorId: ctx.user.id
+      // })
+    })
+
+  findFirst: protectedProcedure
     .input(z.object({ slug: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
        return await ctx.db.topic.findFirst({
@@ -82,7 +102,7 @@ export const postRouter = createTRPCRouter({
 
     }),
   
-    findUnique: publicProcedure
+    findUnique: protectedProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.post.findUnique({
@@ -91,7 +111,7 @@ export const postRouter = createTRPCRouter({
         },
       })
     }),
-  createNewPost: publicProcedure
+  createNewPost: protectedProcedure
     .input(
       z.object({
         title: z.string().min(1),

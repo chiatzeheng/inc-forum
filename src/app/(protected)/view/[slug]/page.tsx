@@ -3,7 +3,7 @@ import { db } from "@/server/db";
 import { FC } from "react";
 import CommentsSection from "@/app/components/CommentsSection";
 import ProfileInfo from "@/app/components/ProfileInfo";
-import { api } from "@/trpc/react"
+import { api } from "@/trpc/server"
 
 interface pageProps {
   params: {
@@ -18,7 +18,7 @@ const page: FC<pageProps> = async ({ params }) => {
   const [postId, commentId ] = params.slug
 
   //TRPC Query for Posts
-  const { data: post } = api.comment.getPost.useQuery({ id: postId})
+  const { data: post } = api.comment.getPost.query({ id: postId})
 
   //if the post is not found, return a message
   if (!post) return <div>Post not found</div>;
