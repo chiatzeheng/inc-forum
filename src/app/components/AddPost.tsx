@@ -14,11 +14,20 @@ import { Button } from "@/app/components/ui/button";
 import { toast as toaster } from "react-hot-toast";
 import { api } from "@/trpc/react";
 import ComboBoxResponsive from "@/app/components/ComboBoxResponsive";
-import type { Topic } from "@/types/comment" 
+import type { Topic } from "@/types/comment";
+
+//Trouble Remembering Mission Vision and Values
+//Did the company even have a formal process for coming up with the Mission, Vision and Values?
 
 const AddPost = (data: Topic[]) => {
   const formSchema = z.object({
     topic: z.string({
+      required_error: "Please select a language.",
+    }),
+    title: z.string({
+      required_error: "Please select a language.",
+    }),
+    content: z.string({
       required_error: "Please select a language.",
     }),
   });
@@ -59,8 +68,8 @@ const AddPost = (data: Topic[]) => {
           name="topic"
           render={({ field }) => (
             <FormItem>
-               <ComboBoxResponsive field={field} datas={data}/>
               <FormControl>
+                <ComboBoxResponsive field={field} datas={data} />
               </FormControl>
               <FormControl>
                 <Input placeholder="Title" {...field} />

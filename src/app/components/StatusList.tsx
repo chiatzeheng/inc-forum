@@ -24,9 +24,8 @@ function StatusList({
             value={topic.name}
               onSelect={(value) => {
                 setTopic(
-                  datas.find((priority: any) => priority.value === value) || null
+                  datas.find((priority: any) => value == priority.name.toLowerCase()) || null
                 );
-                console.log('ad')
                 setOpen(false);
               }}
             >
