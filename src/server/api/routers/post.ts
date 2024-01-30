@@ -62,11 +62,6 @@ export const postRouter = createTRPCRouter({
         orderBy: {
           createdAt: "desc",
         },
-        include: {
-          author: true,
-          comment: true,
-          topic: true,
-        },
         take: 4, // 4 to demonstrate infinite scroll, should be higher in production
       });
     }),
@@ -77,6 +72,7 @@ export const postRouter = createTRPCRouter({
       topic: z.string().min(1),
       content: z.string().min(1),
       title: z.string().min(1), 
+
 }))
     .mutation(async ({ ctx, input }) => {
 
@@ -90,7 +86,7 @@ export const postRouter = createTRPCRouter({
       //     authorId: ctx.user.id
       // })
     })
-
+    ,
   findFirst: protectedProcedure
     .input(z.object({ slug: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
@@ -133,6 +129,11 @@ export const postRouter = createTRPCRouter({
 
       return new Response("OK");
     }),
+
+    getTopic: protectedProcedure
+    .query(async({ctx}) => {
+      return await ctx.db.topic.findMany() 
+    })
 
 
   })

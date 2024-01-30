@@ -1,59 +1,23 @@
-import { api } from '@/trpc/server';
-import { useState } from 'react'
+import AddPost from "@/app/components/AddPost";
+import { api } from "@/trpc/server";
 
-const page= () => {
-    const [formData, setFormData] = useState({
-        title: '',
-        content: ''
-    });
+const Home = async () => {
+  const data = await api.post.getTopic.query();
 
-    const { data: mutate } = await api.post.createNewQuestion.mutation 
-
-    const handleChange = (e: any) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-
-        try {
-            const { data } = await mutate({ formData.title, formData.content});
-            console.log('Post created:', data.postQuestion);
-        } catch (error) {
-            console.error('Error creating post:', error);
-        }
-    };
-
-    return (
-        <div>
-        <h1>Create a Post</h1>
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Title:</label>
-                <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    required
-                />
-            </div>
-            <div>
-                <label>Content:</label>
-                <textarea
-                    name="content"
-                    value={formData.content}
-                    onChange={handleChange}
-                    required
-                ></textarea>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
+  return (
+    <div className="flex flex-col justify-center items-center">
+      <h1 className="mb-4 text-2xl font-bold">
+        Ask any question to the discussion forum!
+      </h1>
+      <div className="border-gray w-1/2 rounded-md border-2 ">
+        <div className="flex flex-col items-center p-4">
+          <div className="w-full">
+            <AddPost data={data} />
+          </div>
+        </div>
+      </div>
     </div>
-    );
-}
+  );
+};
 
-export default page;
+export default Home;

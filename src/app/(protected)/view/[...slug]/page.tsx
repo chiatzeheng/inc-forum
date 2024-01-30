@@ -1,9 +1,11 @@
+"use server"
 import EditorOutput from "@/app/components/EditorOutput";
-import { db } from "@/server/db";
 import { FC } from "react";
 import CommentsSection from "@/app/components/CommentsSection";
 import ProfileInfo from "@/app/components/ProfileInfo";
 import { api } from "@/trpc/server"
+
+//Server Component
 
 interface pageProps {
   params: {
@@ -14,15 +16,12 @@ interface pageProps {
 const page: FC<pageProps> = async ({ params }) => {
 
   //first slug is the post id, second slug is the comment id
+  const [ postId, commentId] = params.slug
   //if there is no comment id, then the second slug is undefined
-  const [postId, commentId ] = params.slug
-
   //TRPC Query for Posts
-  const { data: post } = api.comment.getPost.query({ id: postId})
-
-  //if the post is not found, return a message
+  const post = await api.comment.getPost.query({ id: postId ?? ''})
+  // //if the post is not found, return a message
   if (!post) return <div>Post not found</div>;
-
   return (
     <div className="flex flex-row gap-x-7">
       <div className="basis-2/3">
@@ -35,7 +34,7 @@ const page: FC<pageProps> = async ({ params }) => {
             <p className="mt-3 inline-block rounded-2xl bg-green-200 px-4 py-1">
               {post.topic.name}
             </p>
-          </div>
+          </div> 
           {/* render post content using EditorOutput as we content is stored in json (using editor js) */}
           <EditorOutput content={post.content} />
         </div>

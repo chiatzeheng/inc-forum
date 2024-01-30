@@ -8,32 +8,32 @@ import {
 import { TRPCClientError } from "@trpc/client";
 
 export const commentRouter = createTRPCRouter({
-
-   //get the post with the author and topic
-   getPost: protectedProcedure
-   .input(
-    z.object({
-      id: z.string().min(1)
-    })
-   )
-   .query(async ({ctx, input}) => {
-    return await ctx.db.post.findUnique({
-    include: {
-      author: {
-        select: {
-          name: true,
+  //get the post with the author and topic
+  getPost: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.post.findUnique({
+        include: {
+          author: {
+            select: {
+              name: true,
+            },
+          },
+          topic: {
+            select: {
+              name: true,
+            },
+          },
         },
-      },
-      topic: {
-        select: {
-          name: true,
+        where: {
+          id: input.id,
         },
-      },
-    },
-    where: {
-      id: input.id,
-    },
-  })}),
+      });
+    }),
   createComment: publicProcedure
     .input(
       z.object({
