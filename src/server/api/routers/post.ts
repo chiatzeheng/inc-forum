@@ -1,12 +1,8 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-
   fetchNextPage: protectedProcedure
     .input(
       z.object({
@@ -70,46 +66,47 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-    createNewQuestion: protectedProcedure
-    .input(z.object({
-      title: z.string().min(1),
-      topic: z.string().min(1),
-      content: z.string().min(1),
-      title: z.string().min(1), 
-
-}))
+  createNewQuestion: protectedProcedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        topic: z.string().min(1),
+        content: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-
-      console.log(ctx)
-      // return await ctx.db.post.create(
-      //   {
-      //     title: input.title,
-      //     content: input.content,
-      //     topic: input.topic,
-      //     author: ctx.user
-      //     authorId: ctx.user.id
-      // })
-    })
-    ,
+    try{
+      return await ctx.db.post.create({
+      data: {
+        title: input.title,
+        topic: input.topic,
+        content: input.content,
+        author: ctx.session.user.name,
+        authorId: ctx.session.user.id,
+    }});
+    } catch (error) {
+      console.error("Error creating new post:", error);
+      throw new Error("Failed to create new post"); // Or handle the error accordingly
+    }
+    }),
   findFirst: protectedProcedure
     .input(z.object({ slug: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-       return await ctx.db.topic.findFirst({
+      return await ctx.db.topic.findFirst({
         where: {
           name: input.slug,
         },
       });
-
     }),
-  
-    findUnique: protectedProcedure
+
+  findUnique: protectedProcedure
     .input(z.object({ id: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.post.findUnique({
         where: {
           id: input.id,
         },
-      })
+      });
     }),
   createNewPost: protectedProcedure
     .input(
@@ -134,10 +131,7 @@ export const postRouter = createTRPCRouter({
       return new Response("OK");
     }),
 
-    getTopic: protectedProcedure
-    .query(async({ctx}) => {
-      return await ctx.db.topic.findMany() 
-    })
-
-
-  })
+  getTopic: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db.topic.findMany();
+  }),
+});
