@@ -62,6 +62,10 @@ export const postRouter = createTRPCRouter({
         orderBy: {
           createdAt: "desc",
         },
+        include: {
+          author: true,
+          comment: true,
+        },
         take: 4, // 4 to demonstrate infinite scroll, should be higher in production
       });
     }),

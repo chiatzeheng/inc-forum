@@ -1,52 +1,59 @@
-'use client'
+"use client";
 
-import type { Post, User } from '@prisma/client'
-import { MessageSquare } from 'lucide-react'
-import Link from 'next/link'
-import { useRef } from 'react'
+import type { Post } from "@prisma/client";
+import { MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { useRef } from "react";
+import EditorOutput from "@/app/components/EditorOutput";
 
+interface PostType {
+    post: Post
+    topicName: string
+    commentAmt: number
+}
 
-const Post = ({post}: Post) => {
+const Post = ({ post, topicName, commentAmt }: PostType) => {
 
+  const pRef = useRef<HTMLParagraphElement>(null);
 
-  const pRef = useRef<HTMLParagraphElement>(null)
   return (
-    <div className='rounded-md bg-white shadow'>
-      <div className='px-6 py-4 flex justify-between'>
-
-        <div className='w-0 flex-1'>
-          <div className='max-h-40 mt-1 text-xs text-gray-500'>
-            {post.topicName ? (
+    <div className="rounded-md bg-white shadow">
+      <div className="flex justify-between px-6 py-4">
+        <div className="w-0 flex-1">
+          <div className="mt-1 max-h-40 text-xs text-gray-500">
+            {topicName ? (
               <>
                 <a
-                  className='underline text-zinc-900 text-sm underline-offset-2'
-                  href={`/view/${post.topicName}`}>
-                  {post.topicName || ""}
+                  className="text-sm text-zinc-900 underline underline-offset-2"
+                  href={`/view/${topicName}`}
+                >
+                  {topicName || ""}
                 </a>
-                <span className='px-1'>•</span>
+                <span className="px-1">•</span>
               </>
             ) : null}
-            <span>Posted by {"john"}</span>{' '}
-            latest date
+            <span>Posted by {post?.author.name ?? "John"}</span> created on { post.updatedAt.toLocaleDateString() }
+          
             {/* need to format the time based on R&D Team */}
           </div>
           <a href={`/view/${post.id!}`}>
-            <h1 className='text-lg font-semibold py-2 leading-6 text-gray-900'>
+            <h1 className="py-2 text-lg font-semibold leading-6 text-gray-900">
               {post.title}
             </h1>
+            <EditorOutput content={post.content} />
           </a>
-
         </div>
       </div>
 
-      <div className='bg-gray-50 z-20 text-sm px-4 py-4 sm:px-6'>
+      <div className="z-20 bg-gray-50 px-4 py-4 text-sm sm:px-6">
         <Link
           href={`/add/${post.id!}`}
-          className='w-fit flex items-center gap-2'>
-          <MessageSquare className='h-4 w-4' /> {post.commentAmt} comments
+          className="flex w-fit items-center gap-2"
+        >
+          <MessageSquare className="h-4 w-4" /> {commentAmt} comments
         </Link>
       </div>
     </div>
-  )
-}
-export default Post
+  );
+};
+export default Post;

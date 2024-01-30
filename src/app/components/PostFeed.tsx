@@ -1,7 +1,5 @@
 'use client'
-
 import { ExtendedPost } from '@/types/db'
-import { Loader2 } from 'lucide-react'
 import { useRef } from 'react'
 import Post from '@/app/components/Post'
 import { useIntersection } from '@mantine/hooks'
@@ -21,8 +19,7 @@ const PostFeed = ({ initialPosts, isLoading }: PostFeedProps) => {
   })
 
   if (isLoading) return ( <div>Loading...</div> ) 
-  else
-  return (
+  else return (
     <ul className='flex flex-col col-span-2 space-y-6'>
       {initialPosts.map((post, index) => {
 
@@ -31,6 +28,8 @@ const PostFeed = ({ initialPosts, isLoading }: PostFeedProps) => {
             <li key={post?.id} ref={ref}>
               <Post
                 post={post}
+                topicName={post?.topicName}
+                commentAmt={post.comment?.length}
               />
             </li>
           )

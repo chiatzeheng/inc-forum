@@ -1,6 +1,5 @@
 "use client";
 
-import { FC } from "react";
 import dynamic from "next/dynamic";
 
 const Output = dynamic(
@@ -19,7 +18,7 @@ const style = {
   },
 };
 
-const EditorOutput: FC<EditorOutputProps> = ({ content }) => {
+const EditorOutput = ({ content }: EditorOutputProps) => {
   return <Output style={style} className="text-sm" data={content} />;
 };
 
