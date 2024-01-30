@@ -70,24 +70,24 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string().min(1),
-        topic: z.string().min(1),
+        topicId: z.string().min(1),
         content: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-    try{
-      return await ctx.db.post.create({
-      data: {
-        title: input.title,
-        topic: input.topic,
-        content: input.content,
-        author: ctx.session.user.name,
-        authorId: ctx.session.user.id,
-    }});
-    } catch (error) {
-      console.error("Error creating new post:", error);
-      throw new Error("Failed to create new post"); // Or handle the error accordingly
-    }
+      try {
+        return await ctx.db.post.create({
+          data: {
+            title: input.title,
+            topicId: input.topicId,
+            content: input.content,
+            authorId: ctx.session.user.id,
+          },
+        });
+      } catch (error) {
+        console.error("Error creating new post:", error);
+        throw new Error("Failed to create new post"); // Or handle the error accordingly
+      }
     }),
   findFirst: protectedProcedure
     .input(z.object({ slug: z.string().min(1) }))

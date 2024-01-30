@@ -22,7 +22,7 @@ const AddPost = (data: Topic[]) => {
   const route = useRouter();
 
   const formSchema = z.object({
-    topic: z.string({
+    topicId: z.string({
       required_error: "Please select a topic",
     }),
     title: z.string().min(1).max(60, {
@@ -36,7 +36,7 @@ const AddPost = (data: Topic[]) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      topic: "Part 1: Organisational Enviroment A",
+      topicId: "clrf7q45w0000firab27mz3pp",
       title: "Questions of Mission Vision & Values",
       content:
         "Example: Did the company even have a formal process for coming up with the Mission, Vision and Values?",
@@ -46,22 +46,23 @@ const AddPost = (data: Topic[]) => {
   const { mutate, isLoading } = api.post.createNewQuestion.useMutation({
     onSuccess: (data) => {
       toaster.success("Success!");
-      console.log(data)
-      // route.push(view)
+      route.push(`/view/${data.id}`)
     },
     onError: (err) => {
       console.error(err);
-      toaster.error("Failed to post comment");
+      toaster.error("Failed to post question");
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values)
     try {
       const data = mutate(values);
     } catch (error) {
       console.error("Error creating post:", error);
     }
   }
+
 
   return (
     <Form {...form}>
@@ -71,7 +72,7 @@ const AddPost = (data: Topic[]) => {
       >
         <FormField
           control={form.control}
-          name="topic"
+          name="topicId"
           render={({ field }) => (
             <FormItem>
               <FormControl>
