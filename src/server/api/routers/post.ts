@@ -61,6 +61,7 @@ export const postRouter = createTRPCRouter({
         include: {
           author: true,
           comment: true,
+          topic: true
         },
         take: 4, // 4 to demonstrate infinite scroll, should be higher in production
       });

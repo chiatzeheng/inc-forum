@@ -28,7 +28,7 @@ const PostFeed = ({ initialPosts, isLoading }: PostFeedProps) => {
             <li key={post?.id} ref={ref}>
               <Post
                 post={post}
-                topicName={post?.topicName}
+                topicName={post?.topic.name}
                 commentAmt={post.comment?.length}
               />
             </li>
@@ -39,7 +39,7 @@ const PostFeed = ({ initialPosts, isLoading }: PostFeedProps) => {
               key={post.id}
               post={post}
               commentAmt={post.comment?.length}
-              topicName={post?.topicName }
+              topicName={post?.topic.name }
             />
           )
         }

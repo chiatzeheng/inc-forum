@@ -18,7 +18,11 @@ import ComboBoxResponsive from "@/app/components/ComboBoxResponsive";
 import type { Topic } from "@/types/comment";
 import { useRouter } from "next/navigation";
 
-const AddPost = (data: Topic[]) => {
+interface Props {
+  data: Topic[];
+}
+
+const AddPost = ({data}: Props) => {
   const route = useRouter();
 
   const formSchema = z.object({

@@ -47,7 +47,7 @@ function ComboBoxResponsive(fields: Field) {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0" align="start">
-          <StatusList setOpen={setOpen} setTopic={setTopic} datas={datas.data} />
+          <StatusList setOpen={setOpen} setTopic={setTopic} datas={datas} />
         </PopoverContent>
       </Popover>
     );
@@ -70,7 +70,7 @@ function ComboBoxResponsive(fields: Field) {
       </DrawerTrigger>
       <DrawerContent>
         <div className="mt-4 border-t">
-          <StatusList setOpen={setOpen} setTopic={setTopic} datas={datas.data} />
+          <StatusList setOpen={setOpen} setTopic={setTopic} datas={datas} />
         </div>
       </DrawerContent>
     </Drawer>
