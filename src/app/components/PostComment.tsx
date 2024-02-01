@@ -13,7 +13,7 @@ import { Textarea } from "./ui/textarea";
 import { api } from "@/trpc/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import type { ExtendedComment } from "@/types/comment.d.ts";
+import { ExtendedComment } from "@/types/comment"
 
 interface PostCommentProps {
   comment: ExtendedComment;

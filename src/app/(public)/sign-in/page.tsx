@@ -12,4 +12,6 @@ const page: FC<pageProps> = ({}) => {
   );
 };
 
+export const dynamic = 'force-dynamic';
+
 export default page;
