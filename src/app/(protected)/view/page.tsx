@@ -3,7 +3,6 @@ import { buttonVariants } from '@/app/components/ui/button'
 import { Home as HomeIcon } from 'lucide-react'
 import Link from 'next/link'
 import Feed from "@/app/components/Feed"
-import { api } from '@/trpc/react'
 
 export default function Home() {
 

@@ -5,11 +5,11 @@ import type { Topic } from "@/types/comment";
 function StatusList({ 
     setOpen, 
     setTopic, 
-    datas,
+    data,
 }: { 
     setOpen: (open: boolean) => void; 
     setTopic: (topics: Topic | null) => void; 
-    datas: Topic[];
+    data: any;
 }) {
 
   return (
@@ -18,13 +18,14 @@ function StatusList({
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
-        {datas.map((topic: any) => (
+        {data.data.map((topic: any) => (
             <CommandItem
-            key={topic.name}
-            value={topic.name}
+            key={topic.id}
+            value={topic.id}
               onSelect={(value) => {
+                console.log(value)
                 setTopic(
-                  datas.find((priority: any) => value == priority.name.toLowerCase()) || null
+                  data.data.find((priority: any) => value == priority.id.toLowerCase()) || null
                 );
                 setOpen(false);
               }}
