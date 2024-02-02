@@ -5,12 +5,11 @@ import Post from '@/app/components/Post'
 import { useIntersection } from '@mantine/hooks'
 
 interface PostFeedProps {
-  isLoading : boolean
   initialPosts: ExtendedPost[]
   topicName?: string
 }
 
-const PostFeed = ({ initialPosts, isLoading }: PostFeedProps) => {
+const PostFeed = ({ initialPosts }: PostFeedProps) => {
 
   const lastPostRef = useRef<HTMLElement>(null)
   const { ref, entry } = useIntersection({
@@ -18,8 +17,7 @@ const PostFeed = ({ initialPosts, isLoading }: PostFeedProps) => {
     threshold: 1,
   })
 
-  if (isLoading) return ( <div>Loading...</div> ) 
-  else return (
+  return (
     <ul className='flex flex-col col-span-2 space-y-6'>
       {initialPosts.map((post, index) => {
 

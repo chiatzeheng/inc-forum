@@ -13,7 +13,7 @@ interface PostType {
 }
 
 const Post = ({ post, topicName, commentAmt }: PostType) => {
-
+console.log({post})
   const pRef = useRef<HTMLParagraphElement>(null);
 
   return (

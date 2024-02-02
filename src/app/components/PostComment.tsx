@@ -6,6 +6,8 @@ import {
   Eye,
   Loader2,
   MessageSquare,
+  Pencil,
+  Trash,
 } from "lucide-react";
 import { FC, useState } from "react";
 import { Label } from "./ui/label";
@@ -13,7 +15,7 @@ import { Textarea } from "./ui/textarea";
 import { api } from "@/trpc/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { ExtendedComment } from "@/types/comment"
+import { ExtendedComment } from "@/types/comment";
 
 interface PostCommentProps {
   comment: ExtendedComment;
@@ -49,18 +51,27 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
     replyToId: comment.id,
   });
 
+  const { data: mutateEdit } = api.comment.editComment.useMutation();
+  const { data: mutateComment } = api.comment.deleteComment.useMutation();
+
   return (
     <div className="flex flex-col">
-      <div className="flex items-center">
-        <div className="flex items-center gap-x-2">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-x-2">
           <p className="text-sm font-medium text-gray-900">
             {comment.author.name}
           </p>
+
           <p className="max-h-40 truncate text-xs text-zinc-500">
             {comment.createdAt.toLocaleDateString()}
           </p>
         </div>
+        <div className="flex justify-end">
+          <Pencil className="h-4 w-4" onClick={() => mutateEdit(comment.id)} />
+          <Trash className="h-4 w-4" onClick={() => mutateComment(comment.id)} />
+        </div>
       </div>
+
       <div className="ms-2 mt-2 border-l-2 border-slate-300 px-5">
         <p className="text-md mt-2 text-zinc-900">{comment.text}</p>
         <div className="mt-3">
@@ -72,7 +83,7 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
               size="sm"
               className="me-3 w-fit p-2"
               onClick={() => {
-                router.push(`/post/${comment.postId}/${comment.id}`);
+                router.push(`/view/${comment.postId}/${comment.id}`);
               }}
             >
               Continue this thread

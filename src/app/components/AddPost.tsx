@@ -19,62 +19,10 @@ import {
   PopoverTrigger,
 } from "@/app/components/ui/popover";
 
-<<<<<<< HEAD
 const AddPost = (data: Topic[]) => {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [topic, setTopic] = React.useState<Topic | null>(null); 
-=======
-interface Props {
-  data: Topic[];
-}
-
-const AddPost = ({data}: Props) => {
-  const route = useRouter();
-
-  const formSchema = z.object({
-    topicId: z.string({
-      required_error: "Please select a topic",
-    }),
-    title: z.string().min(1).max(60, {
-      message: "Please provide a title under 60 chracter ",
-    }),
-    content: z.string().min(1).max(1000, {
-      message: "Please provide a title under 500 chracters",
-    }),
-  });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      topicId: "clrf7q45w0000firab27mz3pp",
-      title: "Questions of Mission Vision & Values",
-      content:
-        "Example: Did the company even have a formal process for coming up with the Mission, Vision and Values?",
-    },
-  });
-
-  const { mutate, isLoading } = api.post.createNewQuestion.useMutation({
-    onSuccess: (data) => {
-      toaster.success("Success!");
-      route.push(`/view/${data.id}`)
-    },
-    onError: (err) => {
-      console.error(err);
-      toaster.error("Failed to post question");
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-    try {
-      const data = mutate(values);
-    } catch (error) {
-      console.error("Error creating post:", error);
-    }
-  }
-
->>>>>>> faac9b43b43a17cf7c4f89fa0c81c81d7b630f2b
 
   return (
     <div className="flex-col space-y-8 ">

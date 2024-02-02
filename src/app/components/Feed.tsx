@@ -1,8 +1,7 @@
-"use client";
 import PostFeed from "@/app/components/PostFeed";
 import FirstTime from "./FirstTime";
 import { api } from "@/trpc/react";
-import Skeleton  from "@/app/components/Skeleton";
+import  { Skeleton }  from "@/app/components/ui/skeleton"
 
 //Client Component
 
@@ -14,7 +13,7 @@ const GeneralFeed = () => {
 
 
   return isLoading ? (
-    <Skeleton/>
+    <Skeleton className='flex flex-col col-span-2 space-y-6 p-8 rounded-lg ' />
   ) : !posts ? (
     <FirstTime />
   ) : (

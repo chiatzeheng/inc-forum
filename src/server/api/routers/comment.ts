@@ -34,7 +34,7 @@ export const commentRouter = createTRPCRouter({
         },
       });
     }),
-  createComment: publicProcedure
+  createComment: protectedProcedure
     .input(
       z.object({
         text: z.string().min(1),
@@ -65,7 +65,7 @@ export const commentRouter = createTRPCRouter({
         }
       }
     }),
-  getComments: publicProcedure
+  getComments: protectedProcedure
     .input(
       z.object({
         replyToId: z.string().min(1),
@@ -87,4 +87,24 @@ export const commentRouter = createTRPCRouter({
       });
       return comments;
     }),
+
+
+    editComment: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+        console.log(input)
+    }),
+
+    deleteComment: protectedProcedure
+    .input( 
+    z.object({
+      id: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      console.log(input)
+    })
 });
