@@ -1,6 +1,6 @@
 "use server"
 import React from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/app/_components/ui/button";
 import Link from "next/link";
 
  

@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { Button } from "@/app/components/ui/button";
+import { Button } from "@/app/_components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,8 +9,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/components/ui/form";
-import { Input } from "@/app/components/ui/input";
+} from "@/app/_components/ui/form";
+import { Input } from "@/app/_components/ui/input";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";

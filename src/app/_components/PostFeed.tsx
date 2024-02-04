@@ -1,7 +1,7 @@
 'use client'
 import { ExtendedPost } from '@/types/db'
 import { useRef } from 'react'
-import Post from '@/app/components/Post'
+import Post from '@/app/_components/Post'
 import { useIntersection } from '@mantine/hooks'
 
 interface PostFeedProps {

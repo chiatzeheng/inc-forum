@@ -1,19 +1,20 @@
-import AddPost from "@/app/components/AddPost";
+import AddPost from "@/app/_components/AddPost";
 import { api } from "@/trpc/server";
+import type { Topic } from "@/types/comment";
 
 const Home = async () => {
-  const data = await api.post.getTopic.query();
+  const data: Topic[] = await api.post.getTopic.query();
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen px-4">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mt-8 mb-4">
-        Welcome to the Discussion Forum!
-      </h1>
-      <div className="w-full bg-white rounded-lg shadow-md">
-        <div className="p-4 sm:p-6">
-            <AddPost data={data} />
-          </div>
+    <div className="space-y-2 py-4">
+      <h3 className=" text-2xl font-bold text-gray-800 border-b-2 pb-3">
+        Create a Post
+      </h3>
+      <div className="w-full rounded-lg bg-white shadow-md">
+        <div className="p-4 sm:p-6 mt-4">
+          <AddPost data={data} />
         </div>
+      </div>
     </div>
   );
 };

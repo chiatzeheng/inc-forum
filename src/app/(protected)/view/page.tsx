@@ -1,42 +1,75 @@
-"use client"
-import { buttonVariants } from '@/app/components/ui/button'
-import { Home as HomeIcon } from 'lucide-react'
-import Link from 'next/link'
-import Feed from "@/app/components/Feed"
+"use client";
+import { Button } from "@/app/_components/ui/button";
+import StatusList from "@/app/_components/StatusList";
+import Feed from "@/app/_components/Feed";
+import { ChevronsUpDown } from "lucide-react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+} from "@/app/_components/ui/drawer";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/app/_components/ui/popover";
+import type { Topic } from "@/types/comment";
+import { useState } from "react";
+import { useMediaQuery } from "@mantine/hooks";
+import { api } from "@/trpc/react";
 
 export default function Home() {
-
+  const [open, setOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [topic, setTopic] = useState<Topic | null>(null);
+  const { data } = api.post.getTopic.useQuery();
   return (
     <>
-      <h1 className='font-bold text-3xl md:text-4xl'>Your feed</h1>
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-x1-4 md:gap-x-4 py-6'>
-      <Feed/>
-        <div className='overflow-hiddeen h-fit rounded-lg border border-gray-200 order-first md:order-last'>
-          <div className='bg-emerald-100 px-6 py-4'>
-            <p className='font-semibold py-3 flex items-center gap-1.5'>
-              <HomeIcon className='h-4 w-4' />
-              Home
-            </p>
-          </div>
-          <dl className='-my-3 divide-y divide-gray-100 px-6 py-4 text-sm leading-6'>
-          <div className='flex justify-between gap-x-4 py-3'>
-              <p className='text-zinc-500'>
-                Homepage to see posts 
-              </p>
-            </div>
-
-        
-          <Link
-              className={buttonVariants({
-                className: 'w-full mt-4 mb-6',
-              })}
-              href={`/add`}>
-              Post A Question 
-            </Link>
-            
-          </dl>
+      <div>
+        <div className="space-y-2 border-b-2 py-4">
+          <div className="rounded-md bg-slate-200 p-4">Search Bar</div>
+          {isDesktop ? (
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="justify-between border-zinc-200 bg-zinc-50 text-muted-foreground"
+                >
+                  {topic ? <>{topic.name}</> : <> Set Topic</>}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[300px] p-0" align="start">
+                <StatusList setOpen={setOpen} setTopic={setTopic} data={data} />
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <Drawer open={open} onOpenChange={setOpen}>
+              <DrawerTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="min-w-fit justify-between border-zinc-200 bg-zinc-50 text-muted-foreground"
+                >
+                  {topic ? <>{topic.name}</> : <>Search By Section</>}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <div className="mt-4 border-t">
+                  <StatusList
+                    setOpen={setOpen}
+                    setTopic={setTopic}
+                    data={data}
+                  />
+                </div>
+              </DrawerContent>
+            </Drawer>
+          )}
+        </div>
+        <div className="py-4">
+          <Feed />
         </div>
       </div>
     </>
-  )
+  );
 }

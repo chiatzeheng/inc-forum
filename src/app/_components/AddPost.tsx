@@ -1,10 +1,10 @@
 "use client";
 
-import { Editor } from "@/app/components/Editor";
+import { Editor } from "@/app/_components/Editor";
 import * as React from "react";
 import { useMediaQuery } from "@mantine/hooks";
-import { Button } from "@/app/components/ui/button";
-import StatusList from "@/app/components/StatusList";
+import { Button } from "@/app/_components/ui/button";
+import StatusList from "@/app/_components/StatusList";
 import { ChevronsUpDown } from "lucide-react";
 import type { Topic } from "@/types/comment";
 
@@ -12,17 +12,21 @@ import {
   Drawer,
   DrawerContent,
   DrawerTrigger,
-} from "@/app/components/ui/drawer";
+} from "@/app/_components/ui/drawer";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/components/ui/popover";
+} from "@/app/_components/ui/popover";
 
-const AddPost = (data: Topic[]) => {
+interface props {
+  data: Topic[];
+}
+
+const AddPost = ({ data }: props) => {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [topic, setTopic] = React.useState<Topic | null>(null); 
+  const [topic, setTopic] = React.useState<Topic | null>(null);
 
   return (
     <div className="flex-col space-y-8 ">
@@ -31,13 +35,13 @@ const AddPost = (data: Topic[]) => {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="w-full justify-between text-muted-foreground border-zinc-200 bg-zinc-50"
+              className="w-full justify-between border-zinc-200 bg-zinc-50 text-muted-foreground"
             >
               {topic ? <>{topic.name}</> : <> Set Topic</>}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0" align="start">
+          <PopoverContent className="w-[300px] p-0" align="start">
             <StatusList setOpen={setOpen} setTopic={setTopic} data={data} />
           </PopoverContent>
         </Popover>
@@ -46,7 +50,7 @@ const AddPost = (data: Topic[]) => {
           <DrawerTrigger asChild>
             <Button
               variant="outline"
-              className="w-full justify-between text-muted-foreground border-zinc-200 bg-zinc-50"
+              className="w-full justify-between border-zinc-200 bg-zinc-50 text-muted-foreground"
             >
               {topic ? <>{topic.name}</> : <> Set Topic</>}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -59,7 +63,7 @@ const AddPost = (data: Topic[]) => {
           </DrawerContent>
         </Drawer>
       )}
-      <Editor topic={topic?.id}/>
+      <Editor topic={topic?.id} />
     </div>
   );
 };

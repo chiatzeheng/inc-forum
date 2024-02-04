@@ -73,4 +73,34 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  h2 {
+    @apply text-xl;
+    @apply font-bold
+  }
+  h3 {
+    @apply text-lg;
+    @apply font-semibold
+  }
+  h4 {
+    @apply text-base;
+    @apply font-medium
+  }
+}
+
+/* styles.css or the appropriate CSS file */
+/* For Chrome, Safari, and Edge */
+/* Hide scrollbar arrows by customizing the scrollbar to be minimalistic */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px; /* Adjust the width of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Background of the scrollbar track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a0a0a0; /* Color of the scrollbar thumb */
+  border-radius: 6px; /* Rounded corners of the scrollbar thumb */
+  border: 3px solid #f0f0f0; /* Creates padding effect between thumb and track */
 }

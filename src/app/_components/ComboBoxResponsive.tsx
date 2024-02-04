@@ -3,8 +3,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@mantine/hooks";
-import { Button } from "@/app/components/ui/button";
-import StatusList from "@/app/components/StatusList";
+import { Button } from "@/app/_components/ui/button";
+import StatusList from "@/app/_components/StatusList";
 import { ChevronsUpDown } from "lucide-react";
 import type { Topic } from "@/types/comment";
 
@@ -12,12 +12,12 @@ import {
   Drawer,
   DrawerContent,
   DrawerTrigger,
-} from "@/app/components/ui/drawer";
+} from "@/app/_components/ui/drawer";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/components/ui/popover";
+} from "@/app/_components/ui/popover";
 
 type Field = {
   datas: Topic[];

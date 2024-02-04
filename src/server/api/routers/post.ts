@@ -61,7 +61,7 @@ export const postRouter = createTRPCRouter({
         include: {
           author: true,
           comment: true,
-          topic: true
+          topic: true,
         },
         take: 4, // 4 to demonstrate infinite scroll, should be higher in production
       });
@@ -72,7 +72,7 @@ export const postRouter = createTRPCRouter({
       z.object({
         title: z.string().min(1),
         topicId: z.string().min(1),
-        content: z.any(),
+        content: z.object({}).catchall(z.any()),
       }),
     )
     .mutation(async ({ ctx, input }) => {
