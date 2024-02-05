@@ -7,9 +7,10 @@ import { useIntersection } from '@mantine/hooks'
 interface PostFeedProps {
   initialPosts: ExtendedPost[]
   topicName?: string
+  isLoading?: boolean
 }
 
-const PostFeed = ({ initialPosts }: PostFeedProps) => {
+const PostFeed = ({ initialPosts, isLoading }: PostFeedProps) => {
 
   const lastPostRef = useRef<HTMLElement>(null)
   const { ref, entry } = useIntersection({
@@ -18,18 +19,18 @@ const PostFeed = ({ initialPosts }: PostFeedProps) => {
   })
 
   return (
-    <ul className='flex flex-col col-span-2 space-y-6'>
+    <div className='flex flex-col col-span-2 space-y-6'>
       {initialPosts.map((post, index) => {
 
         if (index === initialPosts.length - 1) {
           return (
-            <li key={post?.id} ref={ref}>
+            <div key={post?.id} ref={ref}>
               <Post
                 post={post}
                 topicName={post?.topic.name}
                 commentAmt={post.comment?.length}
               />
-            </li>
+            </div>
           )
         } else {
           return (
@@ -42,7 +43,7 @@ const PostFeed = ({ initialPosts }: PostFeedProps) => {
           )
         }
       })}
-    </ul>
+    </div>
   )
 }
 

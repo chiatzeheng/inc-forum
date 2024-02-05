@@ -8,16 +8,13 @@ import {
 } from "@/app/_components/ui/command";
 import type { Topic } from "@/types/comment";
 
-function StatusList({
-  setOpen,
-  setTopic,
-  data,
-}: {
-  setOpen: (open: boolean) => void;
-  setTopic: (topics: Topic | null) => void;
+interface StatusListProps {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setTopic: React.Dispatch<React.SetStateAction<Topic | null>>;
   data: any;
-}) {
+}
 
+function StatusList({ setOpen, setTopic, data }: StatusListProps) {
   return (
     <Command>
       <CommandInput placeholder="Filter Topic..." />

@@ -53,7 +53,8 @@ export const Editor = (topic: Topic) => {
     const EditorJS = (await import("@editorjs/editorjs")).default;
     const Header = (await import("@editorjs/header")).default;
     const List = (await import("@editorjs/list")).default;
-    const Delimiter = (await import("@editorjs/delimiter")).default;
+    //@ts-ignore
+    const Delimiter = (await import("@editorjs/delimiter")).default; 
 
     if (!ref.current) {
       const editor = new EditorJS({

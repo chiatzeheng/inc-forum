@@ -1,14 +1,13 @@
 "use client";
 
-import type { Post } from "@prisma/client";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 import EditorOutput from "@/app/_components/EditorOutput";
-import { Separator } from "./ui/separator";
+import { ExtendedPost } from "@/types/db";
 
 interface PostType {
-  post: Post;
+  post: ExtendedPost;
   topicName: string;
   commentAmt: number;
 }
@@ -41,7 +40,7 @@ const Post = ({ post, topicName, commentAmt }: PostType) => {
             <h1 className="mt-2 py-2 text-3xl font-bold leading-6 text-gray-900">
               {post.title}
             </h1>
-              <div className="bg-slate-200 w-full mt-3 h-0.5 mb-4"></div>
+            <div className="mb-4 mt-3 h-0.5 w-full bg-slate-200"></div>
             <EditorOutput content={post.content} />
           </Link>
         </div>

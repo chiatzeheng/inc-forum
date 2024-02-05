@@ -17,7 +17,7 @@ const GoBackButton: FC<GoBackButtonProps> = ({ postId }) => {
       size="sm"
       className="w-fit p-2 mb-3"
       onClick={() => {
-        router.push(`/post/${postId}`);
+        router.push(`/view/${postId}`);
       }}
     >
       <ArrowLeftSquareIcon className="me-1.5 h-5 w-5" />

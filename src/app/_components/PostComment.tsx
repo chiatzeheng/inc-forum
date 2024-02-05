@@ -55,7 +55,7 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
   const { data: mutateComment } = api.comment.deleteComment.useMutation();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col py-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-between gap-x-2">
           <p className="text-sm font-medium text-gray-900">
@@ -67,8 +67,8 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
           </p>
         </div>
         <div className="flex justify-end">
-          <Pencil className="h-4 w-4" onClick={() => mutateEdit(comment.id)} />
-          <Trash className="h-4 w-4" onClick={() => mutateComment(comment.id)} />
+          <Pencil className="h-4 w-4" onClick={() => {}} />
+          <Trash className="h-4 w-4" onClick={() => {}} />
         </div>
       </div>
 
@@ -160,7 +160,7 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
               {comments.map((comment) => {
                 return (
                   <div
-                    className="m-6 rounded-lg bg-white ps-3"
+                    className="ms-6 mt-6 rounded-lg bg-white ps-3"
                     key={comment.id}
                   >
                     <PostComment

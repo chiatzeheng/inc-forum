@@ -88,6 +88,17 @@
   }
 }
 
+@layer base {
+  ul {
+    @apply list-disc;
+    @apply list-inside;
+  }
+  ol {
+    @apply list-decimal;
+    @apply list-inside;
+  }
+}
+
 /* styles.css or the appropriate CSS file */
 /* For Chrome, Safari, and Edge */
 /* Hide scrollbar arrows by customizing the scrollbar to be minimalistic */
