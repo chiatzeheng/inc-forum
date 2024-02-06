@@ -54,7 +54,7 @@ export const Editor = (topic: Topic) => {
     const Header = (await import("@editorjs/header")).default;
     const List = (await import("@editorjs/list")).default;
     //@ts-ignore
-    const Delimiter = (await import("@editorjs/delimiter")).default; 
+    const Delimiter = (await import("@editorjs/delimiter")).default;
 
     if (!ref.current) {
       const editor = new EditorJS({
@@ -141,7 +141,7 @@ export const Editor = (topic: Topic) => {
     <div className="w-full rounded-lg border border-zinc-200 bg-zinc-50 p-4">
       <form
         id="subreddit-post-form"
-        className="w-fit"
+        className="w-full md:w-fit" // Adjusted class for responsiveness
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="prose prose-stone dark:prose-invert">

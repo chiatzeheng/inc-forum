@@ -9,15 +9,15 @@ interface layoutProps {
   children: React.ReactNode;
 }
 
-const layout: FC<layoutProps> = ({ children }) => {
+const layout = ({ children }: layoutProps) => {
   const pathname = usePathname();
 
   return (
     <div
-      className="flex flex-row divide-x md:flex-wrap "
+      className="flex flex-col md:flex-row"
       style={{ minHeight: "calc(100vh - 9rem)" }}
     >
-      <div className="basis-1/6 overflow-hidden border-t-2">
+      <div className="overflow-hidden border-t-2 md:w-1/6">
         <div className="mx-2 space-y-2 py-4">
           <Link
             href="/view"
@@ -45,10 +45,7 @@ const layout: FC<layoutProps> = ({ children }) => {
           </Link>
         </div>
       </div>
-      <div
-        className={`custom-scrollbar basis-2/3 overflow-y-auto border-t-2 px-2`}
-        style={{ height: "calc(100vh - 9rem)" }}
-      >
+      <div className="overflow-y-auto border-t-2 px-2 md:flex-1">
         {children}
       </div>
     </div>

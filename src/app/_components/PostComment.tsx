@@ -51,132 +51,135 @@ const PostComment: FC<PostCommentProps> = ({ comment, layer }) => {
     replyToId: comment.id,
   });
 
-  const { data: mutateEdit } = api.comment.editComment.useMutation();
-  const { data: mutateComment } = api.comment.deleteComment.useMutation();
+  const { mutate: deleteComment } = api.comment.deleteComment.useMutation();
 
-  return (
-    <div className="flex flex-col py-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between gap-x-2">
-          <p className="text-sm font-medium text-gray-900">
-            {comment.author.name}
-          </p>
+  if (comment.deleatedAt) return <div className="text-sm">[deleted]</div>;
+  else
+    return (
+      <div className="flex flex-col py-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-x-2">
+            <p className="text-sm font-medium text-gray-900">
+              {comment.author.name}
+            </p>
 
-          <p className="max-h-40 truncate text-xs text-zinc-500">
-            {comment.createdAt.toLocaleDateString()}
-          </p>
+            <p className="max-h-40 truncate text-xs text-zinc-500">
+              {comment.createdAt.toLocaleDateString()}
+            </p>
+          </div>
+          <div className="flex justify-end">
+            <Trash
+              className="h-4 w-4"
+              onClick={() => deleteComment({ id: comment.id })}
+            />
+          </div>
         </div>
-        <div className="flex justify-end">
-          <Pencil className="h-4 w-4" onClick={() => {}} />
-          <Trash className="h-4 w-4" onClick={() => {}} />
-        </div>
-      </div>
 
-      <div className="ms-2 mt-2 border-l-2 border-slate-300 px-5">
-        <p className="text-md mt-2 text-zinc-900">{comment.text}</p>
-        <div className="mt-3">
-          {/* if the layer is 4 means, the thread is too deep to continue rendering in the same page, so render in a diff page */}
-          {/* this is where the slugs comes into play and the continuation of the thread will be shown first*/}
-          {layer === 4 ? (
+        <div className="ms-2 mt-2 border-l-2 border-slate-300 px-5">
+          <p className="text-md mt-2 text-zinc-900">{comment.text}</p>
+          <div className="mt-3">
+            {/* if the layer is 4 means, the thread is too deep to continue rendering in the same page, so render in a diff page */}
+            {/* this is where the slugs comes into play and the continuation of the thread will be shown first*/}
+            {layer === 4 ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="me-3 w-fit p-2"
+                onClick={() => {
+                  router.push(`/view/${comment.postId}/${comment.id}`);
+                }}
+              >
+                Continue this thread
+                <ArrowRightSquareIcon className="ms-1.5 mt-0.5 h-5 w-5" />
+              </Button>
+            ) : comments && comments.length > 0 ? (
+              <Button
+                variant="outline"
+                size="sm"
+                className="me-3 w-fit p-2"
+                onClick={() => {
+                  setViewMoreComments(!viewMoreComments);
+                }}
+              >
+                <Eye className="mr-1.5 h-4 w-4" />
+                View Comments ({comments.length})
+              </Button>
+            ) : null}
             <Button
-              variant="outline"
-              size="sm"
-              className="me-3 w-fit p-2"
               onClick={() => {
-                router.push(`/view/${comment.postId}/${comment.id}`);
+                setIsReplying(!isReplying);
               }}
-            >
-              Continue this thread
-              <ArrowRightSquareIcon className="ms-1.5 mt-0.5 h-5 w-5" />
-            </Button>
-          ) : comments && comments.length > 0 ? (
-            <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="me-3 w-fit p-2"
-              onClick={() => {
-                setViewMoreComments(!viewMoreComments);
-              }}
+              className="mt-2 w-fit p-2"
             >
-              <Eye className="mr-1.5 h-4 w-4" />
-              View Comments ({comments.length})
+              <MessageSquare className="mr-1.5 h-4 w-4" />
+              Reply
             </Button>
-          ) : null}
-          <Button
-            onClick={() => {
-              setIsReplying(!isReplying);
-            }}
-            variant="ghost"
-            size="sm"
-            className="mt-2 w-fit p-2"
-          >
-            <MessageSquare className="mr-1.5 h-4 w-4" />
-            Reply
-          </Button>
-        </div>
-        {isReplying ? (
-          <div className="mt-1">
-            <Label htmlFor="comment">Your comment</Label>
-            <div className="mt-2">
-              <Textarea
-                id="comment"
-                placeholder="What are your thoughts"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                rows={1}
-              />
-              <div className="mt-2 flex justify-end">
-                <Button
-                  className="mr-2"
-                  onClick={() => {
-                    setIsReplying(false);
-                    setInput("");
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  disabled={input.length === 0 || isLoading}
-                  onClick={() => {
-                    reply({
-                      postId: comment.postId,
-                      replyToId: comment.id,
-                      text: input,
-                    });
-                  }}
-                >
-                  {isLoading && <Loader2 className="mr-1.5 h-4 w-4" />}
-                  Post
-                </Button>
+          </div>
+          {isReplying ? (
+            <div className="mt-1">
+              <Label htmlFor="comment">Your comment</Label>
+              <div className="mt-2">
+                <Textarea
+                  id="comment"
+                  placeholder="What are your thoughts"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  rows={1}
+                />
+                <div className="mt-2 flex justify-end">
+                  <Button
+                    className="mr-2"
+                    onClick={() => {
+                      setIsReplying(false);
+                      setInput("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    disabled={input.length === 0 || isLoading}
+                    onClick={() => {
+                      reply({
+                        postId: comment.postId,
+                        replyToId: comment.id,
+                        text: input,
+                      });
+                    }}
+                  >
+                    {isLoading && <Loader2 className="mr-1.5 h-4 w-4" />}
+                    Post
+                  </Button>
+                </div>
               </div>
             </div>
+          ) : null}
+        </div>
+        {comments ? (
+          <div>
+            {viewMoreComments ? (
+              <div className="mt-2">
+                {comments.map((comment) => {
+                  return (
+                    <div
+                      className="ms-6 mt-6 rounded-lg bg-white ps-3"
+                      key={comment.id}
+                    >
+                      <PostComment
+                        comment={comment}
+                        key={comment.id}
+                        layer={layer + 1}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
-      {comments ? (
-        <div>
-          {viewMoreComments ? (
-            <div className="mt-2">
-              {comments.map((comment) => {
-                return (
-                  <div
-                    className="ms-6 mt-6 rounded-lg bg-white ps-3"
-                    key={comment.id}
-                  >
-                    <PostComment
-                      comment={comment}
-                      key={comment.id}
-                      layer={layer + 1}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
-  );
+    );
 };
 
 export default PostComment;
