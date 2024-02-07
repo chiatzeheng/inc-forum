@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Button } from "@/app/_components/ui/button";
 import {
   Form,
@@ -17,9 +17,11 @@ import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { FormSchema, formSchema } from "@/lib/validators/login";
+import { Loader2 } from "lucide-react";
 
 const Login: FC = () => {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -32,16 +34,26 @@ const Login: FC = () => {
   const onSubmit: SubmitHandler<FormSchema> = async (data, e) => {
     e?.preventDefault();
 
+    // Display a "Logging In..." toast
+    const toastId = toast.loading("Logging In...");
+
+    setIsSubmitting(true);
+
     const result = await signIn("credentials", {
       email: data.email,
       password: data.password,
       redirect: false,
     });
 
+    setIsSubmitting(false); // Set submitting to false after the request is completed
+
+    // Dismiss the "Logging In..." toast
+    toast.dismiss(toastId);
+
     if (result?.error) {
       toast.error("Login failed");
-      return;
     } else {
+      toast.success("Logged in");
       router.push("/");
     }
   };
@@ -75,7 +87,10 @@ const Login: FC = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button disabled={isSubmitting} type="submit">
+          {isSubmitting && <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />}
+          Post
+        </Button>
       </form>
     </Form>
   );

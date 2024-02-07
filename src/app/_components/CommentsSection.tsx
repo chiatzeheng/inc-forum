@@ -5,9 +5,9 @@ import CreateComment from "./CreateComment";
 import PostComment from "./PostComment";
 import GoBackButton from "./GoBackButton";
 import { getAuthSession } from "@/server/auth";
+import { api } from "@/trpc/server"
 
-interface CommentsSectionProps 
-{
+interface CommentsSectionProps {
   postId: string;
   commentId: string | undefined;
 }
@@ -17,23 +17,9 @@ const CommentsSection  = async ({
   postId,
 }: CommentsSectionProps) => {
 
-
-  const comments = await db.comment.findMany({
-    where: {
-      postId: postId,
-      //if commentId is undefined, means the comment is not continuing from a thread, so set replytoId to null as comment
-      //isnt a replying to another comment
-      replyToId: commentId ? undefined : null,
-      //if commentId is defined, means the comment is continuing from a thread, so set replytoId to commentId as comment
-      id: commentId,
-    },
-    include: {
-      author: true,
-    },
-    orderBy: {
-      //latest comments first
-      createdAt: "desc",
-    },
+  const data = await api.comment.getComments.query({
+    postId: postId,
+    commentId: commentId,
   });
 
   const { user } = (await getAuthSession())!;
@@ -47,11 +33,9 @@ const CommentsSection  = async ({
       <CreateComment postId={postId} />
       {
         // if commentId is defined, means the comment is continuing from a thread, so render goback button
-        commentId && comments.length ? (
-          <GoBackButton postId={postId} />
-        ) : null
+        commentId && data.length ? <GoBackButton postId={postId} /> : null
       }
-      {comments.map((comment) => {
+      {data.map((comment) => {
         return (
           <div key={commentId} className="mb-5 rounded-lg bg-white p-3">
             {/* A comment component */}
