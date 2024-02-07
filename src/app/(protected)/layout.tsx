@@ -27,13 +27,14 @@ export default async function RootLayout({
 }) {
   const session = await getAuthSession();
 
-  if (!session?.user) return redirect("/sign-in");
+  if (!session?.user) redirect("/sign-in");
   else
     return (
       <html lang="en">
         <body
           className={`font-sans ${inter.variable} mx-10 bg-slate-50 pt-12 text-slate-900`}
         >
+
           <TRPCReactProvider cookies={cookies().toString()}>
             <MantineProvider>
               <Navbar />

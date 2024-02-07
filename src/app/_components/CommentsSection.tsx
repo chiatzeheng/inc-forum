@@ -1,8 +1,10 @@
+"use server"
 import { db } from "@/server/db";
 import { FC } from "react";
 import CreateComment from "./CreateComment";
 import PostComment from "./PostComment";
 import GoBackButton from "./GoBackButton";
+import { getAuthSession } from "@/server/auth";
 
 interface CommentsSectionProps 
 {
@@ -10,10 +12,10 @@ interface CommentsSectionProps
   commentId: string | undefined;
 }
 
-const CommentsSection: FC<CommentsSectionProps> = async ({
+const CommentsSection  = async ({
   commentId,
   postId,
-}) => {
+}: CommentsSectionProps) => {
 
 
   const comments = await db.comment.findMany({
@@ -34,6 +36,10 @@ const CommentsSection: FC<CommentsSectionProps> = async ({
     },
   });
 
+  const { user } = (await getAuthSession())!;
+
+  console.log(user?.id)
+
   return (
     <div>
       <hr className="my-6 h-px w-full" />
@@ -47,9 +53,9 @@ const CommentsSection: FC<CommentsSectionProps> = async ({
       }
       {comments.map((comment) => {
         return (
-          <div className="mb-5 rounded-lg bg-white p-3">
+          <div key={commentId} className="mb-5 rounded-lg bg-white p-3">
             {/* A comment component */}
-            <PostComment comment={comment} key={comment.id} layer={1} />
+            <PostComment session={user.id} comment={comment} key={comment.id} layer={1} />
           </div>
         );
       })}
