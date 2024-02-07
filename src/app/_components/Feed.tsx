@@ -8,8 +8,9 @@ const GeneralFeed = async () => {
     limit: 10,
     pageParam: 1,
   });
+  const topics = await api.post.getTopic.query();
 
-  return <PostFeed initialPosts={data} />;
+  return <PostFeed initialPosts={data} topics={topics} />;
 };
 
 export default GeneralFeed;

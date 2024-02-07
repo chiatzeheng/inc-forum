@@ -11,12 +11,12 @@ import { Separator } from "./ui/separator";
 
 interface PostFeedProps {
   initialPosts: ExtendedPost[];
+  topics: Topic[];
 }
 
-const PostFeed = ({ initialPosts }: PostFeedProps) => {
+const PostFeed = ({ initialPosts, topics }: PostFeedProps) => {
   const [posts, setPosts] = useState<ExtendedPost[]>(initialPosts);
   const [topic, setTopic] = useState<Topic | null>(null);
-  const { data } = api.post.getTopic.useQuery();
 
   useEffect(() => {
     if (topic) {
@@ -39,7 +39,7 @@ const PostFeed = ({ initialPosts }: PostFeedProps) => {
           <TopicDropDown
             selectedTopic={topic}
             setTopic={setTopic}
-            topics={data}
+            topics={topics}
           />
           {topic && (
             <button
