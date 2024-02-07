@@ -8,6 +8,7 @@ import { MantineProvider } from "@mantine/core";
 import { getAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
 import Navbar from "@/app/_components/Navbar";
+import NextAuthProvider from "../_components/NextAuthProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,11 +37,11 @@ export default async function RootLayout({
         >
           <TRPCReactProvider cookies={cookies().toString()}>
             <MantineProvider>
-              <Navbar />
-              <div className="mt-16 md:container">
-                {children}
-              </div>
-              <Toaster />
+              <NextAuthProvider>
+                <Navbar />
+                <div className="mt-16 md:container">{children}</div>
+                <Toaster />
+              </NextAuthProvider>
             </MantineProvider>
           </TRPCReactProvider>
         </body>

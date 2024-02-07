@@ -1,8 +1,5 @@
-"use client";
-
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { useRef } from "react";
 import EditorOutput from "@/app/_components/EditorOutput";
 import { ExtendedPost } from "@/types/db";
 
@@ -13,8 +10,6 @@ interface PostType {
 }
 
 const Post = ({ post, topicName, commentAmt }: PostType) => {
-  console.log({ post });
-  const pRef = useRef<HTMLParagraphElement>(null);
 
   return (
     <div className="rounded-md bg-white shadow">

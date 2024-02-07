@@ -1,11 +1,7 @@
-"use server";
 import EditorOutput from "@/app/_components/EditorOutput";
 import { FC } from "react";
 import CommentsSection from "@/app/_components/CommentsSection";
-import ProfileInfo from "@/app/_components/ProfileInfo";
 import { api } from "@/trpc/server";
-
-//Server Component
 
 interface pageProps {
   params: {
@@ -27,7 +23,7 @@ const page: FC<pageProps> = async ({ params }) => {
         <div className="rounded-xl bg-white p-10">
           <div className="mb-5 border-b border-gray-300 pb-4">
             <h1 className="mb-1 text-2xl font-bold">{post.title}</h1>
-            <p className="text-sm text-zinc-900 underline underline-offset-2 mb-3">
+            <p className="mb-3 text-sm text-zinc-900 underline underline-offset-2">
               {post.topic.name}
             </p>
             <p className="text-sm text-gray-500">

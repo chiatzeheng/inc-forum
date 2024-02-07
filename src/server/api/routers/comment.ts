@@ -68,35 +68,43 @@ export const commentRouter = createTRPCRouter({
   getComments: protectedProcedure
     .input(
       z.object({
-        replyToId: z.string().min(1),
         postId: z.string().min(1),
+        commentId: z.string().optional(),
+        replyIdToId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
+      console.log(input);
       const comments = await ctx.db.comment.findMany({
         where: {
           postId: input.postId,
-          replyToId: input.replyToId,
+          //if commentId is undefined, means the comment is not continuing from a thread, so set replytoId to null as comment
+          //isnt a replying to another comment
+          replyToId: input.replyIdToId === undefined && input.commentId === undefined ? null : input.replyIdToId,
+          //if commentId is defined, means the comment is continuing from a thread, so set replytoId to commentId as comment
+          id: input.commentId,
         },
         include: {
           author: true,
         },
         orderBy: {
-          createdAt: "desc",
+          //earliest comments first
+          createdAt: "asc",
         },
       });
       return comments;
     }),
 
-    deleteComment: protectedProcedure
-    .input( 
-    z.object({
-      id: z.string().min(1),
-    }))
+  deleteComment: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().min(1),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.comment.update({
         where: { id: input.id },
-        data: { deleatedAt: new Date() }
-    });
-    })
+        data: { deleatedAt: new Date() },
+      });
+    }),
 });
