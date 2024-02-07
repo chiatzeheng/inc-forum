@@ -57,10 +57,12 @@ const PostComment = ({ comment, layer, session }: PostCommentProps) => {
     replyIdToId: comment.id,
   });
 
+
   const { mutate: deleteComment } = api.comment.deleteComment.useMutation({
     onSuccess: () => {
       toast.success("Comment deleted");
       setIsDeleted(true);
+      refetch();
     },
     onError: (err) => {
       console.error(err);
@@ -81,10 +83,10 @@ const PostComment = ({ comment, layer, session }: PostCommentProps) => {
             </p>
           </div>
           <div className="flex justify-end">
-            <Trash
+            { comment.author.id == session && !comment.deleatedAt ? ( <Trash
               className="h-4 w-4"
               onClick={() => deleteComment({ id: comment.id })}
-            />
+            />) : (null)}
           </div>
         </div>
 
@@ -122,7 +124,16 @@ const PostComment = ({ comment, layer, session }: PostCommentProps) => {
                 View Comments ({comments.length})
               </Button>
             ) : null}
-            <Button
+
+            { comment.deleatedAt ? (  <Button
+              variant="ghost"
+              disabled
+              size="sm"
+              className="mt-2 w-fit p-2"
+            >
+              <MessageSquare className="mr-1.5 h-4 w-4" />
+              Reply
+            </Button>) : ( <Button
               onClick={() => {
                 setIsReplying(!isReplying);
               }}
@@ -132,7 +143,7 @@ const PostComment = ({ comment, layer, session }: PostCommentProps) => {
             >
               <MessageSquare className="mr-1.5 h-4 w-4" />
               Reply
-            </Button>
+            </Button>)}
           </div>
           {isReplying ? (
             <div className="mt-1">
